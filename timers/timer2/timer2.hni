@@ -9,63 +9,50 @@
         <label for="node-input-startup" style="width: 65%;" data-i18n="timer2.label.startup"></label>
     </div>
     <div class="form-row">
-        <label style="width:16%" for="node-input-lat"><i class="fa fa-globe"></i> <span data-i18n="timer2.label.latitude"></span></label>
-        <input style="width:26%" type="text" id="node-input-lat" placeholder="54.32">
+        <label style="width: 130px" for="node-input-lat"><i class="fa fa-globe"></i> <span data-i18n="timer2.label.latitude"></span></label>
+        <input style="width:20%" type="text" id="node-input-lat" placeholder="54.32">
+    </div>
+    <div class="form-row">
+        <label style="width: 130px; margin-lef="10px" for="node-input-lon"><i class="fa fa-globe"></i> <span data-i18n="timer2.label.longitude"></span></label>
+        <input style="width:20%" type="text" id="node-input-lon" placeholder="10.13">
+    </div>
+    <div class="form-row">
+        <label style="width: 130px;" for="node-input-typeSelect"><i class="fa fa-random"></i> <span data-i18n="timer2.label.type"></span></label>
+        <select type="text" id="node-input-typeSelect" class="node-input-select2-nosearch" style="display: inline-block; width: 65%;"></select>
+    </div>
+    <div class="form-row">
+        <label style="width: 130px;" for="node-input-trigger"><i class="fa fa-random"></i> <span data-i18n="timer2.label.trigger"></span></label>
+        <select type="text" id="node-input-trigger" class="node-input-select2-nosearch" style="display: inline-block; width: 65%;"></select>
+    </div>
+    <div class="form-row hide" id="node-input-startoff-container">
+        <label  style="width: 130px" for="node-input-startoff"><i class="fa fa-clock-o"></i> <span data-i18n="timer2.label.onoffset"></span> (Min.)</label>
+        <input  style="width: 65%" type="text" id="node-input-startoff" placeholder="0">
+    </div>
+    <div class="form-row hide" id="node-input-timepoint-container">
+        <label  style="width: 130px" for="node-input-timepoint"><i class="fa fa-clock-o"></i> <span data-i18n="timer2.label.timepoint"></span> (Min.)</label>
+        <input  style="width: 65%" type="text" id="node-input-timepoint" placeholder="0">
+    </div>
+    <div class="form-row id="node-input-period-container">
+        <label  style="width: 130px" for="node-input-period"><i class="fa fa-clock-o"></i> <span data-i18n="timer2.label.period"></span></label>
+        <input  style="width: 65%" type="text" id="node-input-period" placeholder="1">
+    </div>
+    <div class="form-row hide" id="node-input-days-container">
+        <label style="width: 130px;" for="node-input-days"><i class="fa fa-random"></i> <span data-i18n="timer2.label.days"></span></label>
+        <select type="text" id="node-input-days" class="node-input-select2-nosearch" style="display: inline-block; width: 65%;"></select>
+    </div>
+    <div class="form-row hide" id="node-input-weekdays-container">
+        <label  style="width: 130px" for="node-input-weekdays"><i class="fa fa-clock-o"></i> <span data-i18n="timer2.label.weekdays"></span></label>
+        <input  style="width: 65%" type="text" id="node-input-weekdays" placeholder="0">
+    </div>
+    <div class="form-row hide" id="node-input-daysnumber-container">
+        <label  style="width: 130px" for="node-input-daysnumber"><i class="fa fa-clock-o"></i> <span data-i18n="timer2.label.days"></span></label>
+        <input  style="width: 65%" type="text" id="node-input-daysnumber" placeholder="0">
+    </div>
+    <div class="form-row hide" id="node-input-month-container">
+        <label  style="width: 130px" for="node-input-month"><i class="fa fa-clock-o"></i> <span data-i18n="timer2.label.month"></span></label>
+        <input  style="width: 65%" type="text" id="node-input-month" placeholder="0">
+    </div>
 
-        <label style="width:16%" for="node-input-lon"><i class="fa fa-globe"></i> <span data-i18n="timer2.label.longitude"></span></label>
-        <input style="width:26%" type="text" id="node-input-lon" placeholder="10.13">
-    </div>
-    <div class="form-row">
-        <label for="node-input-type"><i class="fa fa-clock-o"></i> <span data-i18n="timer2.label.type"></span></label>
-        <select type="text" id="node-input-type" style="display: inline-block; width: 70%;">
-            <option value="daily" data-i18n="timer2.label.daily"></option>
-            <option value="weekly" data-i18n="timer2.label.weekly"></option>
-            <option value="monthly" data-i18n="timer2.label.monthly"></option>
-            <option value="yearly" data-i18n="timer2.label.yearly"></option>
-        </select>
-    </div>
-    <div class="form-row">
-        <label for="node-input-ontime"><i class="fa fa-clock-o"></i> <span data-i18n="timer2.label.ontime"></span></label>
-        <input type="text" id="node-input-ontime" style="width:70%"/>
-        <input type="hidden" id="node-input-ontimetype"/>
-    </div>
-    <div class="form-row">
-        <label for="node-input-offtime"><i class="fa fa-clock-o"></i> <span data-i18n="timer2.label.offtime"></span></label>
-        <input type="text" id="node-input-offtime" style="width:70%"/>
-        <input type="hidden" id="node-input-offtimetype"/>
-    </div>
-    <div class="form-row">
-        <label  style="width:16%" for="node-input-startoff"><i class="fa fa-clock-o"></i> <span data-i18n="timer2.label.onoffset"></span></label>
-        <input  style="width:26%" type="text" id="node-input-startoff" placeholder="0">
-    
-        <label  style="width:16%" for="node-input-endoff"><i class="fa fa-clock-o"></i> <span data-i18n="timer2.label.offoffset"></span></label>
-        <input  style="width:26%" type="text" id="node-input-endoff" placeholder="0">
-    </div>
-    <div class="form-row">
-        <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-mon"><span data-i18n="timer2.label.monday"></span></span>
-        <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-tue"><span data-i18n="timer2.label.tuesday"></span></span>
-        <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-wed"><span data-i18n="timer2.label.wednesday"></span></span>
-        <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-thu"><span data-i18n="timer2.label.thursday"></span></span>
-        <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-fri"><span data-i18n="timer2.label.friday"></span></span>
-        <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-sat"><span data-i18n="timer2.label.saturday"></span></span>
-        <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-sun"><span data-i18n="timer2.label.sunday"></span></span>
-    </div>
-    <div class="form-row">
-        <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-jan"><span data-i18n="timer2.label.january"></span></span>
-        <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-feb"><span data-i18n="timer2.label.february"></span></span>
-        <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-mar"><span data-i18n="timer2.label.march"></span></span>
-        <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-apr"><span data-i18n="timer2.label.april"></span></span>
-        <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-may"><span data-i18n="timer2.label.may"></span></span>
-        <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-jun"><span data-i18n="timer2.label.june"></span></span>
-    </div>
-    <div class="form-row">
-        <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-jul"><span data-i18n="timer2.label.july"></span></span>
-        <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-aug"><span data-i18n="timer2.label.august"></span></span>
-        <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-sep"><span data-i18n="timer2.label.september"></span></span>
-        <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-oct"><span data-i18n="timer2.label.october"></span></span>
-        <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-nov"><span data-i18n="timer2.label.november"></span></span>
-        <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-dec"><span data-i18n="timer2.label.december"></span></span>
-    </div>
 </script>
 <script type="text/javascript">
     RED.nodes.registerType('timer2',{
@@ -74,47 +61,25 @@
         defaults: {
             name: {value:""},
             startup: {value: false},
-            ontime: {value:"", validate: RED.validators.typedInput("ontime")},
-            ontimetype: {value:"suntime"},
-            offtime: {value:"1:15:30", validate: RED.validators.typedInput("offtime")},
-            offtimetype: {value:"time"},
+            enable: {value: false},
             lat: {value:"", required: true},
             lon: {value:"", required: true},
+            typeSelect: {value: "daily"},
+            trigger: {value: "sunrise"},
             startoff: {value:"0", validate:RED.validators.number() },
-            endoff: {value:"0", validate:RED.validators.number() },
-            sun: {value:true},
-            mon: {value:true},
-            tue: {value:true},
-            wed: {value:true},
-            thu: {value:true},
-            fri: {value:true},
-            sat: {value:true},
-            jan: {value:true},
-            feb: {value:true},
-            mar: {value:true},
-            apr: {value:true},
-            may: {value:true},
-            jun: {value:true},
-            jul: {value:true},
-            aug: {value:true},
-            sep: {value:true},
-            oct: {value:true},
-            nov: {value:true},
-            dec: {value:true}
+            timepoint: {value: "0", validate:RED.validators.number()},
+            period: {value: "1", validate:RED.validators.number(), required: true},
+            weekdays: {value: "0"},
+            days: {value: "everyday"},
+            daysnumber: {value: "0", validate:RED.validators.number()},
+            month: {value: "0", validate:RED.validators.number()}
+
         },
-        inputs:3,
+        inputs:1,
         inputInfo: [
             {
                 label: "EN",
                 types: ["boolean"]
-            },
-            {
-                label: "ON_T",
-                types: ["string"]
-            },
-            {
-                label: "OFF_T",
-                types: ["string"]
             }
         ],
         outputs:1,
@@ -124,6 +89,8 @@
             return "timer2";
         },
         oneditprepare: function() {
+            var node = this;
+
             if (($("#node-input-lat").val() === "") && ($("#node-input-lon").val() === "")) {
                 if ("geolocation" in navigator) {
                     navigator.geolocation.getCurrentPosition(function(position) {
@@ -133,21 +100,84 @@
                 }
             }
 
-            $("#node-input-ontime").typedInput({
-                default: 'suntime',
-                typeField: $("#node-input-ontimetype"),
-                types:['suntime','time']
-            });
+            var variableTypeSelect = $("#node-input-typeSelect");
+            variableTypeSelect.append($("<option />").val("daily").text(RED._("timers/timer2:timer2.label.daily")));
+            variableTypeSelect.append($("<option />").val("weekly").text(RED._("timers/timer2:timer2.label.weekly")));
+            variableTypeSelect.append($("<option />").val("monthly").text(RED._("timers/timer2:timer2.label.monthly")));
+            variableTypeSelect.append($("<option />").val("yearly").text(RED._("timers/timer2:timer2.label.yearly")));
+            variableTypeSelect.val(node.typeSelect);
 
-            $("#node-input-ontime").typedInput('type',this.payloadType);
+            var variableTypeSelect = $("#node-input-trigger");
+            variableTypeSelect.append($("<option />").val("sunrise").text(RED._("timers/timer2:timer2.label.sunrise")));
+            variableTypeSelect.append($("<option />").val("sunset").text(RED._("timers/timer2:timer2.label.sunset")));
+            variableTypeSelect.append($("<option />").val("timepoint").text(RED._("timers/timer2:timer2.label.timepoint")));
+            variableTypeSelect.val(node.trigger);
 
-            $("#node-input-offtime").typedInput({
-                default: 'time',
-                typeField: $("#node-input-offtimetype"),
-                types:['suntime','time']
-            });
+            var variableTypeSelect = $("#node-input-days");
+            variableTypeSelect.append($("<option />").val("everyday").text(RED._("timers/timer2:timer2.label.everyday")));
+            variableTypeSelect.append($("<option />").val("workday").text(RED._("timers/timer2:timer2.label.workday")));
+            variableTypeSelect.append($("<option />").val("weekend").text(RED._("timers/timer2:timer2.label.weekend")));
+            variableTypeSelect.val(node.days);
 
-            $("#node-input-offtime").typedInput('type',this.payloadType);
+
+
+            $('.node-input-select2').select2();
+            $('.node-input-select2-nosearch').select2({minimumResultsForSearch: Infinity});
+
+            function updateOffsetTimepoint () {
+
+                var trigger = $("#node-input-trigger").val();
+                if (trigger == "sunrise") {
+                    $("#node-input-startoff-container").show();
+                    $("#node-input-timepoint-container").hide();
+
+                } else if(trigger == "sunset") {
+                    $("#node-input-startoff-container").show();
+                    $("#node-input-timepoint-container").hide();
+
+                } else if(trigger == "timepoint") {
+                    $("#node-input-startoff-container").hide();
+                    $("#node-input-timepoint-container").show();
+                }
+            }
+
+            function updateType () {
+
+                var typeselect = $("#node-input-typeSelect").val();
+                if (typeselect === "daily") {
+                    $("#node-input-days-container").show();
+                    $("#node-input-daysnumber-container").hide();
+                    $("#node-input-weekdays-container").hide();
+                    $("#node-input-month-container").hide();
+
+                } else if(typeselect === "weekly") {
+                    $("#node-input-days-container").hide();
+                    $("#node-input-daysnumber-container").hide();
+                    $("#node-input-weekdays-container").show();
+                    $("#node-input-month-container").hide();
+
+                } else if(typeselect === "monthly") {
+                    $("#node-input-days-container").hide();
+                    $("#node-input-daysnumber-container").show();
+                    $("#node-input-weekdays-container").hide();
+                    $("#node-input-month-container").hide();
+
+                } else if(typeselect === "yearly") {
+                    $("#node-input-days-container").hide();
+                    $("#node-input-daysnumber-container").show();
+                    $("#node-input-weekdays-container").hide();
+                    $("#node-input-month-container").show();
+                }
+            }
+
+            updateType();
+            updateOffsetTimepoint();
+            $("#node-input-typeSelect").change(function (){updateType()});
+            $("#node-input-trigger").change(function (){updateOffsetTimepoint()});
+
+
+
         }
+
     });
 </script>

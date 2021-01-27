@@ -27,606 +27,795 @@
  * files in the program, then also delete it here.
  */
 
+#include <cstring>
 #include "MyNode.h"
 
-namespace Timer2
-{
+namespace Timer2 {
 
-MyNode::MyNode(const std::string &path, const std::string &type, const std::atomic_bool* frontendConnected) : Flows::INode(path, type, frontendConnected)
-{
+MyNode::MyNode(const std::string &path, const std::string &type, const std::atomic_bool *frontendConnected)
+    : Flows::INode(path, type, frontendConnected) {
 }
 
-MyNode::~MyNode()
-{
-	_stopThread = true;
+MyNode::~MyNode() {
+    _stopThread = true;
 }
 
+bool MyNode::init(const Flows::PNodeInfo &info) {
+    try {
 
-bool MyNode::init(const Flows::PNodeInfo &info)
-{
-	try
-	{
-		auto settingsIterator = info->info->structValue->find("startup");
-		if(settingsIterator != info->info->structValue->end()) _outputOnStartUp = settingsIterator->second->booleanValue;
+        auto settingsIterator = info->info->structValue->find("startup");
+        _out->printError(info->info->print());
 
-		{
-			std::lock_guard<std::mutex> timeVariableGuard(_timeVariableMutex);
-			settingsIterator = info->info->structValue->find("ontime");
-			if(settingsIterator != info->info->structValue->end()) _onTime = settingsIterator->second->stringValue;
+        if (settingsIterator != info->info->structValue->end())
+            _outputOnStartUp = settingsIterator->second->booleanValue;
 
-			settingsIterator = info->info->structValue->find("ontimetype");
-			if(settingsIterator != info->info->structValue->end()) _onTimeType = settingsIterator->second->stringValue;
+        settingsIterator = info->info->structValue->find("lat");
+        if (settingsIterator != info->info->structValue->end())
+            _latitude = Flows::Math::getDouble(settingsIterator->second->stringValue);
 
-			settingsIterator = info->info->structValue->find("offtime");
-			if(settingsIterator != info->info->structValue->end()) _offTime = settingsIterator->second->stringValue;
+        settingsIterator = info->info->structValue->find("lon");
+        if (settingsIterator != info->info->structValue->end())
+            _longitude = Flows::Math::getDouble(settingsIterator->second->stringValue);
 
-			settingsIterator = info->info->structValue->find("offtimetype");
-			if(settingsIterator != info->info->structValue->end()) _offTimeType = settingsIterator->second->stringValue;
-		}
+        settingsIterator = info->info->structValue->find("typeSelect");
+        if (settingsIterator != info->info->structValue->end())
+            _type = settingsIterator->second->stringValue;
 
-		settingsIterator = info->info->structValue->find("startoff");
-		if(settingsIterator != info->info->structValue->end()) _onOffset = Flows::Math::getNumber(settingsIterator->second->stringValue) * 60000;
+        settingsIterator = info->info->structValue->find("trigger");
+        if (settingsIterator != info->info->structValue->end())
+            _trigger = settingsIterator->second->stringValue;
 
-		settingsIterator = info->info->structValue->find("endoff");
-		if(settingsIterator != info->info->structValue->end()) _offOffset = Flows::Math::getNumber(settingsIterator->second->stringValue) * 60000;
+        settingsIterator = info->info->structValue->find("startoff");
+        if (settingsIterator != info->info->structValue->end())
+            _onOffset = Flows::Math::getNumber(settingsIterator->second->stringValue);
 
-		settingsIterator = info->info->structValue->find("lat");
-		if(settingsIterator != info->info->structValue->end()) _latitude = Flows::Math::getDouble(settingsIterator->second->stringValue);
+        settingsIterator = info->info->structValue->find("timepoint");
+        if (settingsIterator != info->info->structValue->end())
+            _timepoint = Flows::Math::getNumber(settingsIterator->second->stringValue);
 
-		settingsIterator = info->info->structValue->find("lon");
-		if(settingsIterator != info->info->structValue->end()) _longitude = Flows::Math::getDouble(settingsIterator->second->stringValue);
+        settingsIterator = info->info->structValue->find("period");
+        if (settingsIterator != info->info->structValue->end())
+            _period = Flows::Math::getNumber(settingsIterator->second->stringValue);
 
-		_days.resize(7, true);
-		_months.resize(12, true);
+        settingsIterator = info->info->structValue->find("days");
+        if (settingsIterator != info->info->structValue->end())
+            _days = settingsIterator->second->stringValue;
 
-		settingsIterator = info->info->structValue->find("sun");
-		if(settingsIterator != info->info->structValue->end()) _days.at(0) = settingsIterator->second->booleanValue;
-		settingsIterator = info->info->structValue->find("mon");
-		if(settingsIterator != info->info->structValue->end()) _days.at(1) = settingsIterator->second->booleanValue;
-		settingsIterator = info->info->structValue->find("tue");
-		if(settingsIterator != info->info->structValue->end()) _days.at(2) = settingsIterator->second->booleanValue;
-		settingsIterator = info->info->structValue->find("wed");
-		if(settingsIterator != info->info->structValue->end()) _days.at(3) = settingsIterator->second->booleanValue;
-		settingsIterator = info->info->structValue->find("thu");
-		if(settingsIterator != info->info->structValue->end()) _days.at(4) = settingsIterator->second->booleanValue;
-		settingsIterator = info->info->structValue->find("fri");
-		if(settingsIterator != info->info->structValue->end()) _days.at(5) = settingsIterator->second->booleanValue;
-		settingsIterator = info->info->structValue->find("sat");
-		if(settingsIterator != info->info->structValue->end()) _days.at(6) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("weekdays");
+        if (settingsIterator != info->info->structValue->end())
+            _weekdays = settingsIterator->second->stringValue;
 
-        bool reactivate = true;
-        for(auto day : _days)
-        {
-            if(day)
-            {
-                reactivate = false;
-                break;
+        settingsIterator = info->info->structValue->find("daysnumber");
+        if (settingsIterator != info->info->structValue->end())
+            _daysNumber = Flows::Math::getNumber(settingsIterator->second->stringValue);
+
+        settingsIterator = info->info->structValue->find("month");
+        if (settingsIterator != info->info->structValue->end())
+            _months = Flows::Math::getNumber(settingsIterator->second->stringValue);
+
+        return true;
+    }
+    catch (const std::exception &ex) {
+        _out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__, ex.what());
+    }
+    catch (...) {
+        _out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__);
+    }
+    return false;
+}
+
+bool MyNode::start() {
+    try {
+        _stopped = false;
+        return true;
+    }
+    catch (const std::exception &ex) {
+        _out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__, ex.what());
+    }
+    catch (...) {
+        _out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__);
+    }
+    return false;
+}
+
+void MyNode::startUpComplete() {
+    try {
+        std::lock_guard<std::mutex> timerGuard(_timerMutex);
+        if (!_enabled) return;
+        _stopThread = false;
+        if (_timerThread.joinable()) _timerThread.join();
+        _timerThread = std::thread(&MyNode::timer, this);
+    }
+    catch (const std::exception &ex) {
+        _out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__, ex.what());
+    }
+    catch (...) {
+        _out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__);
+    }
+}
+
+void MyNode::stop() {
+    try {
+        _stopped = true;
+        _stopThread = true;
+    }
+    catch (const std::exception &ex) {
+        _out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__, ex.what());
+    }
+    catch (...) {
+        _out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__);
+    }
+}
+
+void MyNode::waitForStop() {
+    try {
+        std::lock_guard<std::mutex> timerGuard(_timerMutex);
+        _stopThread = true;
+        if (_timerThread.joinable()) _timerThread.join();
+    }
+    catch (const std::exception &ex) {
+        _out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__, ex.what());
+    }
+    catch (...) {
+        _out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__);
+    }
+}
+
+std::vector<std::string> MyNode::splitAll(std::string string, char delimiter) {
+    std::vector<std::string> elements;
+    std::stringstream stringStream(string);
+    std::string element;
+    while (std::getline(stringStream, element, delimiter)) {
+        elements.push_back(element);
+    }
+    if (string.back() == delimiter) elements.emplace_back(std::string());
+    return elements;
+}
+
+int64_t MyNode::getSunTime(int64_t timeStamp, const std::string &time) {
+    try {
+        auto sunTimes = _sunTime.getTimesLocal(timeStamp, _latitude, _longitude);
+        if (time == "sunrise") return sunTimes.times.at(SunTime::SunTimeTypes::sunrise);
+        else if (time == "sunset") return sunTimes.times.at(SunTime::SunTimeTypes::sunset);
+
+    }
+    catch (const std::exception &ex) {
+        _out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__, ex.what());
+    }
+    catch (...) {
+        _out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__);
+    }
+    return -1;
+}
+
+int64_t MyNode::getTime(int64_t currentTime, const std::string &time, const std::string &timeType, int64_t offset) {
+    try {
+        if (timeType == "suntime") {
+            int32_t i = 0;
+            int64_t sunTime = 1;
+            int64_t inputTime = currentTime - 86400000;
+            while (sunTime + offset < currentTime && sunTime >= 0 && i < 1000) {
+                sunTime = getSunTime(inputTime, time);
+                inputTime += 86400000;
+                i++;
             }
-        }
-        if(reactivate)
-        {
-            _out->printWarning("Warning: No day selected.");
-            for(auto day : _days)
-            {
-                day = true;
+            return sunTime + offset;
+        } else {
+            auto timeVector = splitAll(time, ':');
+            int64_t returnValue = (_sunTime.getLocalTime() / 86400000) * 86400000 + offset - 86400000;
+            if (!timeVector.empty()) {
+                returnValue += Flows::Math::getNumber64(timeVector.at(0)) * 3600000;
+                if (timeVector.size() > 1) {
+                    returnValue += Flows::Math::getNumber64(timeVector.at(1)) * 60000;
+                    if (timeVector.size() > 2) returnValue += Flows::Math::getNumber64(timeVector.at(2)) * 1000;
+                }
             }
-        }
-
-		settingsIterator = info->info->structValue->find("jan");
-		if(settingsIterator != info->info->structValue->end()) _months.at(0) = settingsIterator->second->booleanValue;
-		settingsIterator = info->info->structValue->find("feb");
-		if(settingsIterator != info->info->structValue->end()) _months.at(1) = settingsIterator->second->booleanValue;
-		settingsIterator = info->info->structValue->find("mar");
-		if(settingsIterator != info->info->structValue->end()) _months.at(2) = settingsIterator->second->booleanValue;
-		settingsIterator = info->info->structValue->find("apr");
-		if(settingsIterator != info->info->structValue->end()) _months.at(3) = settingsIterator->second->booleanValue;
-		settingsIterator = info->info->structValue->find("may");
-		if(settingsIterator != info->info->structValue->end()) _months.at(4) = settingsIterator->second->booleanValue;
-		settingsIterator = info->info->structValue->find("jun");
-		if(settingsIterator != info->info->structValue->end()) _months.at(5) = settingsIterator->second->booleanValue;
-		settingsIterator = info->info->structValue->find("jul");
-		if(settingsIterator != info->info->structValue->end()) _months.at(6) = settingsIterator->second->booleanValue;
-		settingsIterator = info->info->structValue->find("aug");
-		if(settingsIterator != info->info->structValue->end()) _months.at(7) = settingsIterator->second->booleanValue;
-		settingsIterator = info->info->structValue->find("sep");
-		if(settingsIterator != info->info->structValue->end()) _months.at(8) = settingsIterator->second->booleanValue;
-		settingsIterator = info->info->structValue->find("oct");
-		if(settingsIterator != info->info->structValue->end()) _months.at(9) = settingsIterator->second->booleanValue;
-		settingsIterator = info->info->structValue->find("nov");
-		if(settingsIterator != info->info->structValue->end()) _months.at(10) = settingsIterator->second->booleanValue;
-		settingsIterator = info->info->structValue->find("dec");
-		if(settingsIterator != info->info->structValue->end()) _months.at(11) = settingsIterator->second->booleanValue;
-
-        reactivate = true;
-        for(auto month : _months)
-        {
-            if(month)
-            {
-                reactivate = false;
-                break;
-            }
-        }
-        if(reactivate)
-        {
-            _out->printWarning("Warning: No month selected.");
-            for(auto month : _months)
-            {
-                month = true;
-            }
-        }
-
-		auto enabled = getNodeData("enabled");
-		if(enabled->type == Flows::VariableType::tBoolean) _enabled = enabled->booleanValue;
-		_lastOnTime = getNodeData("lastOnTime")->integerValue64;
-		_lastOffTime = getNodeData("lastOffTime")->integerValue64;
-
-		return true;
-	}
-	catch(const std::exception& ex)
-	{
-		_out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__, ex.what());
-	}
-	catch(...)
-	{
-		_out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__);
-	}
-	return false;
-}
-
-bool MyNode::start()
-{
-	try
-	{
-		_stopped = false;
-		return true;
-	}
-	catch(const std::exception& ex)
-	{
-		_out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__, ex.what());
-	}
-	catch(...)
-	{
-		_out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__);
-	}
-	return false;
-}
-
-void MyNode::startUpComplete()
-{
-	try
-	{
-		std::lock_guard<std::mutex> timerGuard(_timerMutex);
-		if(!_enabled) return;
-		_stopThread = false;
-		if(_timerThread.joinable()) _timerThread.join();
-		_timerThread = std::thread(&MyNode::timer, this);
-	}
-	catch(const std::exception& ex)
-	{
-		_out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__, ex.what());
-	}
-	catch(...)
-	{
-		_out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__);
-	}
-}
-
-void MyNode::stop()
-{
-	try
-	{
-		_stopped = true;
-		_stopThread = true;
-	}
-	catch(const std::exception& ex)
-	{
-		_out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__, ex.what());
-	}
-	catch(...)
-	{
-		_out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__);
-	}
-}
-
-void MyNode::waitForStop()
-{
-	try
-	{
-		std::lock_guard<std::mutex> timerGuard(_timerMutex);
-		_stopThread = true;
-		if(_timerThread.joinable()) _timerThread.join();
-	}
-	catch(const std::exception& ex)
-	{
-		_out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__, ex.what());
-	}
-	catch(...)
-	{
-		_out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__);
-	}
-}
-
-std::vector<std::string> MyNode::splitAll(std::string string, char delimiter)
-{
-	std::vector<std::string> elements;
-	std::stringstream stringStream(string);
-	std::string element;
-	while (std::getline(stringStream, element, delimiter))
-	{
-		elements.push_back(element);
-	}
-	if(string.back() == delimiter) elements.emplace_back(std::string());
-	return elements;
-}
-
-int64_t MyNode::getSunTime(int64_t timeStamp, const std::string& time)
-{
-	try
-	{
-		auto sunTimes = _sunTime.getTimesLocal(timeStamp, _latitude, _longitude);
-		if(time == "sunrise") return sunTimes.times.at(SunTime::SunTimeTypes::sunrise);
-		else if(time == "sunset") return sunTimes.times.at(SunTime::SunTimeTypes::sunset);
-		else if(time == "sunriseEnd") return sunTimes.times.at(SunTime::SunTimeTypes::sunriseEnd);
-		else if(time == "sunsetStart") return sunTimes.times.at(SunTime::SunTimeTypes::sunsetStart);
-		else if(time == "dawn") return sunTimes.times.at(SunTime::SunTimeTypes::dawn);
-		else if(time == "dusk") return sunTimes.times.at(SunTime::SunTimeTypes::dusk);
-		else if(time == "nauticalDawn") return sunTimes.times.at(SunTime::SunTimeTypes::nauticalDawn);
-		else if(time == "nauticalDusk") return sunTimes.times.at(SunTime::SunTimeTypes::nauticalDusk);
-		else if(time == "nightEnd") return sunTimes.times.at(SunTime::SunTimeTypes::nightEnd);
-		else if(time == "night") return sunTimes.times.at(SunTime::SunTimeTypes::night);
-		else if(time == "goldenHourEnd") return sunTimes.times.at(SunTime::SunTimeTypes::goldenHourEnd);
-		else if(time == "goldenHour") return sunTimes.times.at(SunTime::SunTimeTypes::goldenHour);
-		else if(time == "solarNoon") return sunTimes.solarNoon;
-		else if(time == "nadir") return sunTimes.nadir;
-	}
-	catch(const std::exception& ex)
-	{
-		_out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__, ex.what());
-	}
-	catch(...)
-	{
-		_out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__);
-	}
-	return -1;
-}
-
-int64_t MyNode::getTime(int64_t currentTime, const std::string& time, const std::string& timeType, int64_t offset)
-{
-	try
-	{
-		if(timeType == "suntime")
-		{
-			int32_t i = 0;
-			int64_t sunTime = 1;
-			int64_t inputTime = currentTime - 86400000;
-			while(sunTime + offset < currentTime && sunTime >= 0 && i < 1000)
-			{
-				sunTime = getSunTime(inputTime, time);
-				inputTime += 86400000;
-				i++;
-			}
-			return sunTime + offset;
-		}
-		else
-		{
-			auto timeVector = splitAll(time, ':');
-			int64_t returnValue = (_sunTime.getLocalTime() / 86400000) * 86400000 + offset - 86400000;
-			if(!timeVector.empty())
-			{
-              returnValue += Flows::Math::getNumber64(timeVector.at(0)) * 3600000;
-				if(timeVector.size() > 1)
-				{
-                  returnValue += Flows::Math::getNumber64(timeVector.at(1)) * 60000;
-					if(timeVector.size() > 2) returnValue += Flows::Math::getNumber64(timeVector.at(2)) * 1000;
-				}
-			}
-            std::tm timeStruct {};
+            std::tm timeStruct{};
             _sunTime.getTimeStruct(timeStruct);
-            int64_t utcTime = _sunTime.getUtcTime(returnValue);
-			while(returnValue < currentTime || !_days.at(timeStruct.tm_wday) || !_months.at(timeStruct.tm_mon))
-            {
-              returnValue += 86400000;
-                utcTime = _sunTime.getUtcTime(returnValue);
-                _sunTime.getTimeStruct(timeStruct, utcTime);
+
+            return returnValue;
+        }
+    }
+    catch (const std::exception &ex) {
+        _out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__, ex.what());
+    }
+    catch (...) {
+        _out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__);
+    }
+    return 0;
+}
+
+std::array<int64_t, 100> MyNode::ConvertStrtoArr(std::string timepoint) {
+    if (timepoint.length() > 0) {
+
+        int64_t j = 0, i;
+        std::array<int64_t, 100> arr = {0};
+        for (i = 0; timepoint[i] != '\0'; i++) {
+
+            if (timepoint[i] == ' ')
+                continue;
+            if (timepoint[i] == ',') {
+                j++;
+            } else {
+                arr[j] = arr[j] * 10 + (timepoint[i] - 48);
             }
-			return returnValue;
-		}
-	}
-	catch(const std::exception& ex)
-	{
-		_out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__, ex.what());
-	}
-	catch(...)
-	{
-		_out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__);
-	}
-	return 0;
+        }
+
+        return arr;
+
+    }
 }
 
-std::pair<int64_t, bool> MyNode::getNext(int64_t currentTime, int64_t onTime, int64_t offTime)
-{
-	try
-	{
-		std::pair<int64_t, bool> result = std::make_pair(-1, false);
+MyNode::NextTime MyNode::getNext() {
+    struct NextTime structnext_time;
+    std::string type_in_getNext = _type;
+    std::string trigger_in_getNext = _trigger;
+    int64_t offset_in_getNext = _onOffset * 1000 * 60;
+    int64_t period_in_getNext = _period;
+    std::string days_in_getNext = _days;
+    int64_t days_number_in_getNext = _daysNumber;
+    int64_t months_in_getNext;
+    std::string weekdays_in_getNext = _weekdays;
+    int64_t current_time = _sunTime.getLocalTime();
+    int64_t inputTime = current_time - 86400000;
+    int64_t sunriseTime = getSunTime(current_time, "sunrise");
+    int64_t sunsetTime = getSunTime(current_time, "sunset");
+    int64_t timepoint_min_in_getNext = _timepoint * 1000 * 60;
+    std::tm tm{};
+    _sunTime.getTimeStruct(tm);
+    int month_in_getNext = tm.tm_year / 100;
+    int year_in_getNext = (tm.tm_year - (month_in_getNext * 100)) + 2000;
+    int64_t day_start_in_getNext = current_time - (current_time % 86400000);
+    int weekday_index = 0;
+    int weekday_offset = 0;
+    bool gap_year;
+    int days_mmax = 0;
 
-		if((currentTime >= onTime && currentTime >= offTime)) return result;
+    if ((year_in_getNext % 100 != 0 && year_in_getNext % 4 == 0) || year_in_getNext % 400 == 0) {
+        gap_year = true;
+    } else {
+        gap_year = false;
+    }
 
-		if(onTime >= currentTime && offTime >= currentTime)
-		{
-			if(onTime > offTime)
-			{
-				result.first = offTime;
-				result.second = false;
-			}
-			else
-			{
-				result.first = onTime;
-				result.second = true;
-			}
-		}
-		else if(onTime >= currentTime)
-		{
-			result.first = onTime;
-			result.second = true;
-		}
-		else //offTime >= currentTime
-		{
-			result.first = offTime;
-			result.second = false;
-		}
+    tm.tm_mon = tm.tm_mon + 1; //Korrektur da Jan=0,Feb=1,...
 
-		return result;
-	}
-	catch(const std::exception& ex)
-	{
-		_out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__, ex.what());
-	}
-	catch(...)
-	{
-		_out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__);
-	}
-	return std::make_pair(-1, false);
+
+    if (tm.tm_wday == 0) {
+        tm.tm_wday = 7; //Korrektur da Son=0, Mon=1,...
+    }
+
+    int current_weekday = tm.tm_wday;
+
+    if (((tm.tm_mon) % 2) == 1) {
+        days_mmax = 31;
+    } else {
+        days_mmax = 30;
+        if (gap_year && tm.tm_mon == 2) {
+            days_mmax = 29;
+        }
+        if (!gap_year && tm.tm_mon == 2) {
+            days_mmax = 28;
+        }
+    }
+
+    if (period_in_getNext == 1) {
+        period_in_getNext = 0;
+    } else {
+        period_in_getNext = period_in_getNext - 1;
+    }
+
+    if (type_in_getNext == "daily") {
+
+        if (days_in_getNext == "weekend") {
+            if (tm.tm_wday < 6) {
+                weekday_offset = 6 - tm.tm_wday;
+                period_in_getNext = 0;
+            }
+        }
+        if (days_in_getNext == "workday") {
+            if (tm.tm_wday > 5) {
+                weekday_offset = (tm.tm_wday - 8) * (-1);
+                period_in_getNext = 0;
+            }
+        }
+
+        if (trigger_in_getNext == "sunrise") {
+            if (current_time >= sunriseTime + offset_in_getNext) {
+
+                structnext_time.time = sunriseTime + offset_in_getNext + (weekday_offset * 86400000) + (period_in_getNext * 86400000) + 86400000;
+                structnext_time.day = tm.tm_mday + weekday_offset + period_in_getNext + 1;
+
+                if (structnext_time.day > days_mmax) {
+                    structnext_time.day = structnext_time.day - days_mmax;
+                    structnext_time.month = month_in_getNext + 1;
+                } else {
+                    structnext_time.month = month_in_getNext;
+                }
+
+                if (structnext_time.month >= 12) {
+                    structnext_time.month = structnext_time.month - 12;
+                    structnext_time.year = year_in_getNext + 1;
+                } else {
+                    structnext_time.year = year_in_getNext;
+                }
+
+                return structnext_time;
+            }
+            if (sunriseTime + offset_in_getNext > current_time) {
+                structnext_time.time = sunriseTime + offset_in_getNext + (weekday_offset * 86400000) + (period_in_getNext * 86400000);
+                structnext_time.day = tm.tm_mday + weekday_offset + period_in_getNext;
+
+                if (structnext_time.day > days_mmax) {
+                    structnext_time.day = structnext_time.day - days_mmax;
+                    structnext_time.month = month_in_getNext + 1;
+                } else {
+                    structnext_time.month = month_in_getNext;
+                }
+
+                if (structnext_time.month >= 12) {
+                    structnext_time.month = structnext_time.month - 12;
+                    structnext_time.year = year_in_getNext + 1;
+                } else {
+                    structnext_time.year = year_in_getNext;
+                }
+
+                return structnext_time;
+            }
+        }
+        if (trigger_in_getNext == "sunset") {
+            if (current_time >= sunsetTime + offset_in_getNext) {
+                structnext_time.time = sunsetTime + offset_in_getNext + (weekday_offset * 86400000) + (period_in_getNext * 86400000) + 86400000;
+                structnext_time.day = tm.tm_mday + weekday_offset + period_in_getNext + 1;
+
+                if (structnext_time.day > days_mmax) {
+                    structnext_time.day = structnext_time.day - days_mmax;
+                    structnext_time.month = month_in_getNext + 1;
+                } else {
+                    structnext_time.month = month_in_getNext;
+                }
+
+                if (structnext_time.month >= 12) {
+                    structnext_time.month = structnext_time.month - 12;
+                    structnext_time.year = year_in_getNext + 1;
+                } else {
+                    structnext_time.year = year_in_getNext;
+                }
+
+                return structnext_time;
+            }
+            if (sunsetTime + offset_in_getNext > current_time) {
+                structnext_time.time = sunsetTime + offset_in_getNext + (weekday_offset * 86400000) + (period_in_getNext * 86400000);
+                structnext_time.day = tm.tm_mday + weekday_offset + period_in_getNext;
+
+                if (structnext_time.day > days_mmax) {
+                    structnext_time.day = structnext_time.day - days_mmax;
+                    structnext_time.month = month_in_getNext + 1;
+                } else {
+                    structnext_time.month = month_in_getNext;
+                }
+
+                if (structnext_time.month >= 12) {
+                    structnext_time.month = structnext_time.month - 12;
+                    structnext_time.year = year_in_getNext + 1;
+                } else {
+                    structnext_time.year = year_in_getNext;
+                }
+
+                return structnext_time;
+            }
+
+        }
+        if (trigger_in_getNext == "timepoint") {
+            if (current_time >= day_start_in_getNext + timepoint_min_in_getNext) {
+
+                structnext_time.time = day_start_in_getNext + timepoint_min_in_getNext + (weekday_offset * 86400000) + (period_in_getNext * 86400000) + 86400000;
+                structnext_time.day = tm.tm_mday + weekday_offset + period_in_getNext + 1;
+
+                if (structnext_time.day > days_mmax) {
+                    structnext_time.day = structnext_time.day - days_mmax;
+                    structnext_time.month = month_in_getNext + 1;
+                } else {
+                    structnext_time.month = month_in_getNext;
+                }
+
+                if (structnext_time.month >= 12) {
+                    structnext_time.month = structnext_time.month - 12;
+                    structnext_time.year = year_in_getNext + 1;
+                } else {
+                    structnext_time.year = year_in_getNext;
+                }
+
+                return structnext_time;
+            }
+            if (day_start_in_getNext + timepoint_min_in_getNext > current_time) {
+                structnext_time.time = day_start_in_getNext + timepoint_min_in_getNext + (weekday_offset * 86400000) + (period_in_getNext * 86400000);
+                structnext_time.day = tm.tm_mday + weekday_offset + period_in_getNext;
+
+                if (structnext_time.day > days_mmax) {
+                    structnext_time.day = structnext_time.day - days_mmax;
+                    structnext_time.month = month_in_getNext + 1;
+                } else {
+                    structnext_time.month = month_in_getNext;
+                }
+
+                if (structnext_time.month >= 12) {
+                    structnext_time.month = structnext_time.month - 12;
+                    structnext_time.year = year_in_getNext + 1;
+                } else {
+                    structnext_time.year = year_in_getNext;
+                }
+
+                return structnext_time;
+            }
+
+        }
+
+    }
+    if (type_in_getNext == "weekly") {
+        std::string WeekdaysFiltered = stringFilter(weekdays_in_getNext, "','");
+        _out->printError("WeekdaysFiltered " + WeekdaysFiltered);
+        char weekdays_array[WeekdaysFiltered.length() + 1];
+        int next;
+        int following_next;
+        strcpy(weekdays_array, WeekdaysFiltered.c_str());
+
+        for (int i = 0; i < 7; i++) {
+            if (weekdays_array[i] > 0 && weekdays_array[i] - 48 > 0 && weekdays_array[i] - 48 <= 7) {
+                _out->printError("WeekdaysArray " +std::to_string(weekdays_array[i] - 48));
+                if (weekdays_array[i] - 48 >= current_weekday) {
+                    next = weekdays_array[i] - 48;
+                    _out->printError("next " + std::to_string(next));
+                    break;
+                }
+            }
+        }
+        for (int j = 0; j < 7; j++) {
+            if (weekdays_array[j] > 0 && weekdays_array[j] - 48 > 0 && weekdays_array[j] - 48 <= 7) {
+                if (weekdays_array[j] - 48 > next) {
+                    following_next = weekdays_array[j] - 48;
+
+                    break;
+                }
+            }
+        }
+
+        int offset_weekdays = next - current_weekday; //TODO anderer Name
+        int offset_next = following_next - next;
+        if (offset_next < 0){
+            offset_next = 0;
+        }
+
+        if (offset_next < 0) {
+            offset_next = 0;
+        }
+        if (following_next == 0){
+            offset_next = 7;
+        }
+
+        if (period_in_getNext != 0){
+            offset_next = 0;
+        }
+        _out->printError("offset_weekdays " + std::to_string(offset_weekdays));
+        _out->printError("offset_next " + std::to_string(offset_next));
+        _out->printError("period_in_getNext " + std::to_string(period_in_getNext));
+        _out->printError("follownext " + std::to_string(following_next));
+        _out->printError("tmmday " + std::to_string(tm.tm_mday));
+        if (trigger_in_getNext == "sunrise") {
+            if (current_time >= sunriseTime + offset_in_getNext) {
+
+                structnext_time.time = sunriseTime + offset_next * 86400000 + (period_in_getNext * 86400000 * (period_in_getNext * 7));
+                structnext_time.day = tm.tm_mday + offset_next + (period_in_getNext * 7) + offset_weekdays;
+
+                if (structnext_time.day > days_mmax) {
+                    structnext_time.day = structnext_time.day - days_mmax;
+                    structnext_time.month = month_in_getNext + 1;
+                } else {
+                    structnext_time.month = month_in_getNext;
+                }
+
+                if (structnext_time.month >= 12) {
+                    structnext_time.month = structnext_time.month - 12;
+                    structnext_time.year = year_in_getNext + 1;
+                } else {
+                    structnext_time.year = year_in_getNext;
+                }
+
+                return structnext_time;
+            }
+            if (sunriseTime + offset_in_getNext > current_time) {
+                structnext_time.time = sunriseTime + offset_in_getNext + (offset_weekdays * 86400000) + (period_in_getNext * 86400000 * (period_in_getNext * 7));
+                structnext_time.day = tm.tm_mday + offset_weekdays + period_in_getNext * 7;
+
+                if (structnext_time.day > days_mmax) {
+                    structnext_time.day = structnext_time.day - days_mmax;
+                    structnext_time.month = month_in_getNext + 1;
+                } else {
+                    structnext_time.month = month_in_getNext;
+                }
+
+                if (structnext_time.month >= 12) {
+                    structnext_time.month = structnext_time.month - 12;
+                    structnext_time.year = year_in_getNext + 1;
+                } else {
+                    structnext_time.year = year_in_getNext;
+                }
+
+                return structnext_time;
+            }
+        }
+        if (trigger_in_getNext == "sunset") {
+            if (current_time >= sunsetTime + offset_in_getNext) {
+                structnext_time.time = sunsetTime + offset_next * 86400000 + (period_in_getNext * 86400000 * (period_in_getNext * 7));
+                structnext_time.day = tm.tm_mday + offset_next + period_in_getNext * 7;
+
+                if (structnext_time.day > days_mmax) {
+                    structnext_time.day = structnext_time.day - days_mmax;
+                    structnext_time.month = month_in_getNext + 1;
+                } else {
+                    structnext_time.month = month_in_getNext;
+                }
+
+                if (structnext_time.month >= 12) {
+                    structnext_time.month = structnext_time.month - 12;
+                    structnext_time.year = year_in_getNext + 1;
+                } else {
+                    structnext_time.year = year_in_getNext;
+                }
+
+                return structnext_time;
+            }
+            if (sunsetTime + offset_in_getNext > current_time) {
+                structnext_time.time = sunsetTime + offset_in_getNext + (offset_weekdays * 86400000) + (period_in_getNext * 86400000 * 7);
+                structnext_time.day = tm.tm_mday + offset_weekdays + period_in_getNext * 7;
+
+                if (structnext_time.day > days_mmax) {
+                    structnext_time.day = structnext_time.day - days_mmax;
+                    structnext_time.month = month_in_getNext + 1;
+                } else {
+                    structnext_time.month = month_in_getNext;
+                }
+
+                if (structnext_time.month >= 12) {
+                    structnext_time.month = structnext_time.month - 12;
+                    structnext_time.year = year_in_getNext + 1;
+                } else {
+                    structnext_time.year = year_in_getNext;
+                }
+
+                return structnext_time;
+            }
+
+        }
+        if (trigger_in_getNext == "timepoint") {
+            if (current_time >= day_start_in_getNext + timepoint_min_in_getNext) {
+
+
+                structnext_time.time = day_start_in_getNext + timepoint_min_in_getNext + (offset_next * 86400000) + (period_in_getNext * 86400000 * (period_in_getNext * 7));
+                structnext_time.day = tm.tm_mday + offset_next + period_in_getNext * 7;
+
+                if (structnext_time.day > days_mmax) {
+                    structnext_time.day = structnext_time.day - days_mmax;
+                    structnext_time.month = month_in_getNext + 1;
+                } else {
+                    structnext_time.month = month_in_getNext;
+                }
+
+                if (structnext_time.month >= 12) {
+                    structnext_time.month = structnext_time.month - 12;
+                    structnext_time.year = year_in_getNext + 1;
+                } else {
+                    structnext_time.year = year_in_getNext;
+                }
+
+                return structnext_time;
+            }
+            if (day_start_in_getNext + timepoint_min_in_getNext > current_time) {
+                _out->printError("current_weekday " + std::to_string(current_weekday));
+
+                if (current_weekday == next){
+                    period_in_getNext = 0;
+                    offset_next = 0;
+                }
+                if (period_in_getNext != 0){
+                    offset_next = 0;
+                }
+
+                structnext_time.time = day_start_in_getNext + timepoint_min_in_getNext + (offset_next * 86400000) + (period_in_getNext * 86400000 * 7);
+                structnext_time.day = tm.tm_mday + offset_next + period_in_getNext * 7;
+
+
+                if (structnext_time.day > days_mmax) {
+                    structnext_time.day = structnext_time.day - days_mmax;
+                    structnext_time.month = month_in_getNext + 1;
+                } else {
+                    structnext_time.month = month_in_getNext;
+                }
+
+                if (structnext_time.month >= 12) {
+                    structnext_time.month = structnext_time.month - 12;
+                    structnext_time.year = year_in_getNext + 1;
+                } else {
+                    structnext_time.year = year_in_getNext;
+                }
+
+                return structnext_time;
+            }
+
+        }
+    }
+    if (type_in_getNext == "monthly") {
+        if (trigger_in_getNext == "sunrise") {
+
+        }
+        if (trigger_in_getNext == "sunset") {
+
+        }
+        if (trigger_in_getNext == "timepoint") {
+
+        }
+
+    }
+    if (type_in_getNext == "yearly") {
+        if (trigger_in_getNext == "sunrise") {
+
+        }
+        if (trigger_in_getNext == "sunset") {
+
+        }
+        if (trigger_in_getNext == "timepoint") {
+
+        }
+
+    }
+
 }
 
-std::string MyNode::getDateString(int64_t time)
-{
-	const char timeFormat[] = "%x";
-	std::time_t t = 0;
-	if(time > 0)
-	{
-		t = std::time_t(time / 1000);
-	}
-	else
-	{
-		const auto timePoint = std::chrono::system_clock::now();
-		t = std::chrono::system_clock::to_time_t(timePoint);
-	}
-	char timeString[50];
-	std::tm localTime {};
-	localtime_r(&t, &localTime);
-	strftime(&timeString[0], 50, &timeFormat[0], &localTime);
-	std::ostringstream timeStream;
-	timeStream << timeString;
-	return timeStream.str();
+std::string MyNode::getDateString(int64_t time) {
+    const char timeFormat[] = "%x";
+    std::time_t t = 0;
+    if (time > 0) {
+        t = std::time_t(time / 1000);
+    } else {
+        const auto timePoint = std::chrono::system_clock::now();
+        t = std::chrono::system_clock::to_time_t(timePoint);
+    }
+    char timeString[50];
+    std::tm localTime{};
+    localtime_r(&t, &localTime);
+    strftime(&timeString[0], 50, &timeFormat[0], &localTime);
+    std::ostringstream timeStream;
+    timeStream << timeString;
+    return timeStream.str();
 }
 
-void MyNode::printNext(int64_t currentTime, int64_t onTime, int64_t offTime)
-{
-	try
-	{
-		auto next = getNext(currentTime, onTime, offTime);
-
-		Flows::PVariable status = std::make_shared<Flows::Variable>(Flows::VariableType::tStruct);
-		if(next.first == -1)
-		{
-			status->structValue->emplace("text", std::make_shared<Flows::Variable>("Next: Unknown"));
-			nodeEvent("statusBottom/" + _id, status, true);
-			return;
-		}
-
-		std::ostringstream timeStream;
-		if(next.first > currentTime + 86400000)
-		{
-			timeStream << getDateString(next.first);
-		}
-		else
-		{
-			next.first = next.first / 1000;
-			next.first = next.first % 86400;
-			int32_t hours = next.first / 3600;
-			next.first = next.first % 3600;
-			int32_t minutes = next.first / 60;
-			int32_t seconds = next.first % 60;
-			timeStream << std::setw(2) << std::setfill('0') << hours << ':' << std::setw(2) << minutes << ':' << std::setw(2) << seconds;
-		}
-
-		status->structValue->emplace("text", std::make_shared<Flows::Variable>("Next: " + timeStream.str() + " (" + (next.second ? "on" : "off") + ")"));
-		nodeEvent("statusBottom/" + _id, status, true);
-	}
-	catch(const std::exception& ex)
-	{
-		_out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__, ex.what());
-	}
-	catch(...)
-	{
-		_out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__);
-	}
+std::string MyNode::stringFilter(const std::string &to, const std::string &remove) {
+    std::string final;
+    for (std::string::const_iterator it = to.begin(); it != to.end(); ++it) {
+        if (remove.find(*it) == std::string::npos) {
+            final += *it;
+        }
+    }
+    return final;
 }
 
-void MyNode::timer()
-{
-	bool update = false;
-	int64_t currentTime = _sunTime.getLocalTime();
+void MyNode::printNext(NextTime next) {
+
+    int64_t day_next = next.day;
+    int64_t month_next = next.month;
+    int64_t year_next = next.year;
+
+    next.time = next.time / 1000;
+
+    next.time = next.time % 86400;
+    ;
+    int32_t hours_next = next.time / 3600;
+
+    next.time = next.time % 3600;
+
+    int32_t minutes_next = next.time / 60;
+
+    int32_t seconds_next = next.time % 60;
+
+
+    std::ostringstream timeStream;
+    Flows::PVariable status = std::make_shared<Flows::Variable>(Flows::VariableType::tStruct);
+
+    timeStream << std::setw(2) << std::setfill('0') << day_next << "." << std::setw(2) << month_next << "."
+               << std::setw(2) << year_next << " " << std::setw(2) << hours_next << ':' << std::setw(2) << minutes_next << ':'
+               << std::setw(2) << seconds_next;
+
+    status->structValue->emplace("text", std::make_shared<Flows::Variable>("Next: " + timeStream.str()));
+    nodeEvent("statusBottom/" + _id, status, true);
+
+}
+
+void MyNode::timer() {
+
+    int64_t currentTime = _sunTime.getLocalTime();
     int64_t lastTime = currentTime;
+    std::tm tm{};
+    _sunTime.getTimeStruct(tm);
+    auto next_time = getNext();
+    printNext(next_time);
+    bool update = false;
+    int64_t time = getTime(SunTime().getLocalTime(), "sunrise", "suntime", 0);
+    std::tm timeStruct{};
+    int periodcounter = _period;
+    _sunTime.getTimeStruct(timeStruct);
 
-    std::string onTimeString;
-	std::string onTimeType;
-    std::string offTimeString;
-    std::string offTimeType;
 
-	{
-		std::lock_guard<std::mutex> timeVariableGuard(_timeVariableMutex);
-		onTimeString = _onTime;
-		onTimeType = _onTimeType;
-		offTimeString = _offTime;
-		offTimeType = _offTimeType;
-	}
+    //TODO add Workday/Weekend check if type == daily
+    while (!_stopThread) {
+        try {
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            if (_stopThread) break;
+            currentTime = _sunTime.getLocalTime();
 
-	int64_t onTime = getTime(currentTime, onTimeString, onTimeType, _onOffset);
-	int64_t offTime = getTime(currentTime, offTimeString, offTimeType, _offOffset);
-	int32_t day = 0;
-	int32_t month = 0;
+            _lastTime = next_time.time;
 
-	{
-		std::tm tm {};
-		_sunTime.getTimeStruct(tm);
-		day = tm.tm_wday;
-		month = tm.tm_mon;
-	}
-
-	printNext(currentTime, onTime, offTime);
-
-	if(_outputOnStartUp)
-	{
-		auto next = getNext(currentTime, onTime, offTime);
-		if(next.first != -1)
-		{
-			Flows::PVariable message = std::make_shared<Flows::Variable>(Flows::VariableType::tStruct);
-			message->structValue->emplace("payload", std::make_shared<Flows::Variable>(!next.second));
-			output(0, message);
-		}
-	}
-
-	while(!_stopThread)
-	{
-		try
-		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(500));
-			if(_stopThread) break;
-			currentTime = _sunTime.getLocalTime();
-            if(_lastOnTime < onTime && currentTime >= onTime && _lastOffTime < offTime && currentTime >= offTime)
-            {
-                if(onTime > offTime) _lastOffTime = offTime;
-                else _lastOnTime = onTime;
+            if (currentTime / 1000 == next_time.time / 1000) {
+                if (period_check) {
+                    update = true;
+                    _lastTime = next_time.time;
+                    setNodeData("lastOnTime", std::make_shared<Flows::Variable>(_lastTime));
+                    Flows::PVariable message = std::make_shared<Flows::Variable>(Flows::VariableType::tStruct);
+                    message->structValue->emplace("payload", std::make_shared<Flows::Variable>(true));
+                    output(0, message);
+                    period_check = false;
+                } else {
+                    periodcounter--;
+                    if (periodcounter == 0) {
+                        period_check = true;
+                    }
+                }
             }
-			if(_lastOnTime <= onTime && currentTime >= onTime)
-			{
-				update = true;
-				if(_days.at(day) && _months.at(month))
-				{
-					_lastOnTime = onTime;
-					setNodeData("lastOnTime", std::make_shared<Flows::Variable>(_lastOnTime));
-                    Flows::PVariable message = std::make_shared<Flows::Variable>(Flows::VariableType::tStruct);
-					message->structValue->emplace("payload", std::make_shared<Flows::Variable>(true));
-                    output(0, message);
-					if(onTime == offTime) _lastOffTime = offTime;
-				}
-			}
-			if(_lastOffTime <= offTime && currentTime >= offTime)
-			{
-				update = true;
-				if(_days.at(day) && _months.at(month))
-				{
-					_lastOffTime = offTime;
-					setNodeData("lastOffTime", std::make_shared<Flows::Variable>(_lastOffTime));
-                    Flows::PVariable message = std::make_shared<Flows::Variable>(Flows::VariableType::tStruct);
-					message->structValue->emplace("payload", std::make_shared<Flows::Variable>(false));
-                    output(0, message);
-				}
-			}
-			if(update || _forceUpdate || currentTime % 3600000 < lastTime % 3600000) //New hour? Recalc in case of time changes or summer/winter time
-			{
-				update = false;
+
+            if (update || _forceUpdate || currentTime % 3600000 < lastTime % 3600000) //New hour? Recalc in case of time changes or summer/winter time
+            {
+                update = false;
                 _forceUpdate = false;
+                next_time = getNext();
 
-				{
-					std::lock_guard<std::mutex> timeVariableGuard(_timeVariableMutex);
-					onTimeString = _onTime;
-					onTimeType = _onTimeType;
-					offTimeString = _offTime;
-					offTimeType = _offTimeType;
-				}
-
-				onTime = getTime(currentTime, onTimeString, onTimeType, _onOffset);
-				offTime = getTime(currentTime, offTimeString, offTimeType, _offOffset);
-				{
-					std::tm tm {};
-					_sunTime.getTimeStruct(tm);
-					day = tm.tm_wday;
-					month = tm.tm_mon;
-				}
-				printNext(currentTime, onTime, offTime);
-			}
+            }
             lastTime = currentTime;
-		}
-		catch(const std::exception& ex)
-		{
-			_out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__, ex.what());
-		}
-		catch(...)
-		{
-			_out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__);
-		}
-	}
+        }
+        catch (const std::exception &ex) {
+            _out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__, ex.what());
+        }
+        catch (...) {
+            _out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__);
+        }
+    }
+
 }
 
-void MyNode::input(const Flows::PNodeInfo &info, uint32_t index, const Flows::PVariable &message)
-{
-	try
-	{
-		if(index == 0) //Enabled
-		{
-			_enabled = message->structValue->at("payload")->booleanValue;
-			setNodeData("enabled", std::make_shared<Flows::Variable>(_enabled));
-			std::lock_guard<std::mutex> timerGuard(_timerMutex);
-			if(_enabled)
-			{
-				if(!_stopThread)
-				{
-					_stopThread = true;
-					if(_timerThread.joinable()) _timerThread.join();
-					if(_stopped) return;
-					_stopThread = false;
-					_timerThread = std::thread(&MyNode::timer, this);
-
-                    _forceUpdate = true;
-				}
-			}
-			else
-			{
-				_stopThread = true;
-				if(_timerThread.joinable()) _timerThread.join();
-			}
-		}
-		else if(index == 1) // Set on time
-		{
-			std::lock_guard<std::mutex> timeVariableGuard(_timeVariableMutex);
-			std::string time = message->structValue->at("payload")->stringValue;
-			if(time.empty()) return;
-			_onTime = time;
-			_onTimeType = "time";
-
-            _forceUpdate = true;
-		}
-		else if(index == 2) // Set off time
-		{
-			std::lock_guard<std::mutex> timeVariableGuard(_timeVariableMutex);
-			std::string time = message->structValue->at("payload")->stringValue;
-			if(time.empty()) return;
-			_offTime = time;
-			_offTimeType = "time";
-
-            _forceUpdate = true;
-		}
-	}
-	catch(const std::exception& ex)
-	{
-		_out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__, ex.what());
-	}
-	catch(...)
-	{
-		_out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__);
-	}
+void MyNode::input(const Flows::PNodeInfo &info, uint32_t index, const Flows::PVariable &message) {
+    try {
+        if (index == 0) //Enabled
+        {
+            _enabled = message->structValue->at("payload")->booleanValue;
+            setNodeData("enabled", std::make_shared<Flows::Variable>(_enabled));
+            std::lock_guard<std::mutex> timerGuard(_timerMutex);
+            if (_enabled) {
+                if (!_stopThread) {
+                    _stopThread = true;
+                    if (_timerThread.joinable()) _timerThread.join();
+                    if (_stopped) return;
+                    _stopThread = false;
+                    _timerThread = std::thread(&MyNode::timer, this);
+                }
+            } else {
+                _stopThread = true;
+                if (_timerThread.joinable()) _timerThread.join();
+            }
+        }
+    }
+    catch (const std::exception &ex) {
+        _out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__, ex.what());
+    }
+    catch (...) {
+        _out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__);
+    }
 }
 
 }

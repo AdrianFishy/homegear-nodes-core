@@ -349,7 +349,8 @@ std::string MyNode::getDateString(int64_t time) {
 void MyNode::printNext(int64_t currentTime, int64_t onTime, int64_t offTime) {
   try {
     auto next = getNext(currentTime, onTime, offTime);
-
+      _out->printError("timer first " + std::to_string(next.first));
+      _out->printError("timer second " + std::to_string(next.second));
     Flows::PVariable status = std::make_shared<Flows::Variable>(Flows::VariableType::tStruct);
     if (next.first == -1) {
       status->structValue->emplace("text", std::make_shared<Flows::Variable>("Next: Unknown"));
@@ -385,6 +386,7 @@ void MyNode::timer() {
   bool update = false;
   int64_t currentTime = _sunTime.getLocalTime();
   int64_t lastTime = currentTime;
+
 
   std::string onTimeString;
   std::string onTimeType;
@@ -453,37 +455,37 @@ void MyNode::timer() {
         }
       }
       if (update || _forceUpdate || currentTime % 3600000 < lastTime % 3600000) //New hour? Recalc in case of time changes or summer/winter time
-      {
+    {
         update = false;
         _forceUpdate = false;
 
         {
-          std::lock_guard<std::mutex> timeVariableGuard(_timeVariableMutex);
-          onTimeString = _onTime;
-          onTimeType = _onTimeType;
-          offTimeString = _offTime;
-          offTimeType = _offTimeType;
+            std::lock_guard<std::mutex> timeVariableGuard(_timeVariableMutex);
+            onTimeString = _onTime;
+            onTimeType = _onTimeType;
+            offTimeString = _offTime;
+            offTimeType = _offTimeType;
         }
 
         onTime = getTime(currentTime, onTimeString, onTimeType, _onOffset);
         offTime = getTime(currentTime, offTimeString, offTimeType, _offOffset);
         {
-          std::tm tm{};
-          _sunTime.getTimeStruct(tm);
-          day = tm.tm_wday;
-          month = tm.tm_mon;
+            std::tm tm{};
+            _sunTime.getTimeStruct(tm);
+            day = tm.tm_wday;
+            month = tm.tm_mon;
         }
         printNext(currentTime, onTime, offTime);
-      }
-      lastTime = currentTime;
     }
-    catch (const std::exception &ex) {
-      _out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__, ex.what());
-    }
-    catch (...) {
-      _out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__);
-    }
-  }
+    lastTime = currentTime;
+}
+catch (const std::exception &ex) {
+    _out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__, ex.what());
+}
+catch (...) {
+    _out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__);
+}
+}
 }
 
 void MyNode::input(const Flows::PNodeInfo &info, uint32_t index, const Flows::PVariable &message) {

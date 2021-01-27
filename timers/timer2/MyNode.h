@@ -52,24 +52,31 @@ class MyNode : public Flows::INode {
   std::atomic_bool _enabled{true};
   bool _outputOnStartUp = false;
   std::mutex _timeVariableMutex;
-  std::string _onTime;
-  std::string _onTimeType;
-  std::string _offTime;
-  std::string _offTimeType;
-  int64_t _onOffset = 0;
-  int64_t _offOffset = 0;
-  int64_t _lastOnTime = 0;
-  int64_t _lastOffTime = 0;
   double _latitude = 54.32;
   double _longitude = 10.13;
-  std::vector<bool> _days;
-  std::vector<bool> _months;
+  struct NextTime{
+     int64_t time;
+     int64_t day;
+     int64_t month;
+     int year;
+  };
 
+  std::string _type;
+  std::string _trigger;
+  int64_t _onOffset;
+  int64_t _timepoint;
+  int64_t _period;
+  std::string _days;
+  int64_t _daysNumber;
+  int64_t _months;
+  std::string _weekdays;
+  int64_t _lastTime;
   std::mutex _timerMutex;
   std::atomic_bool _stopThread{true};
   std::atomic_bool _stopped{true};
   std::atomic_bool _forceUpdate{false};
   std::thread _timerThread;
+  bool period_check;
 
   std::vector<std::string> splitAll(std::string string, char delimiter);
   void timer();
@@ -77,8 +84,11 @@ class MyNode : public Flows::INode {
   int64_t getSunTime(int64_t timeStamp, const std::string& time);
   int64_t getTime(int64_t currentTime, const std::string& time, const std::string& timeType, int64_t offset);
   void input(const Flows::PNodeInfo &info, uint32_t index, const Flows::PVariable &message) override;
-  std::pair<int64_t, bool> getNext(int64_t currentTime, int64_t onTime, int64_t offTime);
-  void printNext(int64_t currentTime, int64_t onTime, int64_t offTime);
+  NextTime getNext();
+  void printNext(NextTime next);
+  std::string stringFilter(const std::string &to, const std::string &remove);
+  std::array<int64_t, 100> ConvertStrtoArr(std::string timepoint);
+
 };
 
 }

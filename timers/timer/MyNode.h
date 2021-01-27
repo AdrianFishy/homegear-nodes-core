@@ -79,6 +79,7 @@ class MyNode : public Flows::INode {
   void input(const Flows::PNodeInfo &info, uint32_t index, const Flows::PVariable &message) override;
   std::pair<int64_t, bool> getNext(int64_t currentTime, int64_t onTime, int64_t offTime);
   void printNext(int64_t currentTime, int64_t onTime, int64_t offTime);
+
 };
 
 }

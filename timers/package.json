@@ -20,7 +20,8 @@
       "slow-pwm": 1,
       "sun-position": 1,
       "timer": 1,
-      "weekly-program": 1
+      "weekly-program": 1,
+      "timer2": 1
     },
     "nodes": {
       "clock": "clock.so",
@@ -34,7 +35,8 @@
       "slow-pwm": "slow-pwm.so",
       "sun-position": "sun-position.so",
       "timer": "timer.so",
-      "weekly-program": "weekly-program.so"
+      "weekly-program": "weekly-program.so",
+      "timer2": "timer2.so"
     }
   },
   "version": "1.0.0"
