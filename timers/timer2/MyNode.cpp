@@ -266,7 +266,7 @@ MyNode::NextTime MyNode::getNext() {
     int month_in_getNext = tm.tm_year / 100;
     int year_in_getNext = (tm.tm_year - (month_in_getNext * 100)) + 2000;
     int64_t day_start_in_getNext = current_time - (current_time % 86400000);
-    int weekday_index = 0;
+    int nextday = 0;
     int weekday_offset = 0;
     bool gap_year;
     int days_mmax = 0;
@@ -300,8 +300,6 @@ MyNode::NextTime MyNode::getNext() {
 
     if (period_in_getNext == 1) {
         period_in_getNext = 0;
-    } else {
-        period_in_getNext = period_in_getNext - 1;
     }
 
     if (type_in_getNext == "daily") {
@@ -319,11 +317,27 @@ MyNode::NextTime MyNode::getNext() {
             }
         }
 
+        if (days_in_getNext == "everyday") {
+            if (current_time >= sunriseTime + offset_in_getNext) {
+                nextday = 1;
+            } else {
+                nextday = 0;
+            }
+        }
+
         if (trigger_in_getNext == "sunrise") {
             if (current_time >= sunriseTime + offset_in_getNext) {
 
-                structnext_time.time = sunriseTime + offset_in_getNext + (weekday_offset * 86400000) + (period_in_getNext * 86400000) + 86400000;
-                structnext_time.day = tm.tm_mday + weekday_offset + period_in_getNext + 1; // TODO in constante
+                if (days_in_getNext == "everyday") {
+                    if (current_time >= sunriseTime + offset_in_getNext) {
+                        nextday = 1;
+                    } else {
+                        nextday = 0;
+                    }
+                }
+
+                structnext_time.time = sunriseTime + offset_in_getNext + (weekday_offset * 86400000) + (period_in_getNext * 86400000) + nextday * 86400000;
+                structnext_time.day = tm.tm_mday + weekday_offset + period_in_getNext + nextday; // TODO in constante
 
                 if (structnext_time.day > days_mmax) {
                     structnext_time.day = structnext_time.day - days_mmax;
@@ -364,8 +378,17 @@ MyNode::NextTime MyNode::getNext() {
         }
         if (trigger_in_getNext == "sunset") {
             if (current_time >= sunsetTime + offset_in_getNext) {
-                structnext_time.time = sunsetTime + offset_in_getNext + (weekday_offset * 86400000) + (period_in_getNext * 86400000) + 86400000;
-                structnext_time.day = tm.tm_mday + weekday_offset + period_in_getNext + 1;
+
+                if (days_in_getNext == "everyday") {
+                    if (current_time >= sunsetTime + offset_in_getNext) {
+                        nextday = 1;
+                    } else {
+                        nextday = 0;
+                    }
+                }
+
+                structnext_time.time = sunsetTime + offset_in_getNext + (weekday_offset * 86400000) + (period_in_getNext * 86400000) + nextday * 86400000;
+                structnext_time.day = tm.tm_mday + weekday_offset + period_in_getNext +nextday;
 
                 if (structnext_time.day > days_mmax) {
                     structnext_time.day = structnext_time.day - days_mmax;
@@ -408,8 +431,16 @@ MyNode::NextTime MyNode::getNext() {
         if (trigger_in_getNext == "timepoint") {
             if (current_time >= day_start_in_getNext + timepoint_min_in_getNext) {
 
-                structnext_time.time = day_start_in_getNext + timepoint_min_in_getNext + (weekday_offset * 86400000) + (period_in_getNext * 86400000) + 86400000;
-                structnext_time.day = tm.tm_mday + weekday_offset + period_in_getNext + 1;
+                if (days_in_getNext == "everyday") {
+                    if (current_time >= day_start_in_getNext + timepoint_min_in_getNext) {
+                        nextday = 1;
+                    } else {
+                        nextday = 0;
+                    }
+                }
+
+                structnext_time.time = day_start_in_getNext + timepoint_min_in_getNext + (weekday_offset * 86400000) + (period_in_getNext * 86400000) + nextday * 86400000;
+                structnext_time.day = tm.tm_mday + weekday_offset + period_in_getNext + nextday;
 
                 if (structnext_time.day > days_mmax) {
                     structnext_time.day = structnext_time.day - days_mmax;
@@ -453,7 +484,6 @@ MyNode::NextTime MyNode::getNext() {
     }
     if (type_in_getNext == "weekly") {
         std::string WeekdaysFiltered = stringFilter(weekdays_in_getNext, "','");
-        _out->printError("WeekdaysFiltered " + WeekdaysFiltered);
         char weekdays_array[WeekdaysFiltered.length() + 1];
         int next = 0;
         int following_next = 0;
@@ -461,10 +491,8 @@ MyNode::NextTime MyNode::getNext() {
 
         for (int i = 0; i < 7; i++) {
             if (weekdays_array[i] > 0 && weekdays_array[i] - 48 > 0 && weekdays_array[i] - 48 <= 7) {
-                _out->printError("WeekdaysArray " +std::to_string(weekdays_array[i] - 48));
                 if (weekdays_array[i] - 48 >= current_weekday) {
                     next = weekdays_array[i] - 48;
-                    _out->printError("next " + std::to_string(next));
                     break;
                 }
             }
@@ -479,53 +507,36 @@ MyNode::NextTime MyNode::getNext() {
         }
 
         if (following_next == 0 && next != current_weekday) {
-            _out->printError("following_next == 0");
             for (int j = 7; j >= 0; j--) {
-                _out->printError("j2 " + std::to_string(j));
-                    if (weekdays_array[j] - 48 < next) {
-                        following_next = weekdays_array[j] - 48;
-                        _out->printError("j3 " + std::to_string(j));
-                        _out->printError("weekdays_array[j] " + std::to_string(weekdays_array[j] - 48));
-                    }
+                if (weekdays_array[j] - 48 < next) {
+                    following_next = weekdays_array[j] - 48;
+                }
             }
         }
 
         int offset_weekdays = next - current_weekday; //TODO anderer Name
 
-        if (offset_weekdays < 0){
+        if (offset_weekdays < 0) {
             offset_weekdays = 0;
         }
 
         int offset_next = following_next - next;
-        if (offset_next < 0){
-            offset_next = 0;
-        }
 
         if (offset_next < 0) {
             offset_next = 0;
         }
 
-        if (following_next < current_weekday && following_next > 0){
+        if (following_next < current_weekday && following_next > 0) {
             offset_next = 7 - (current_weekday - following_next);
         }
 
-        if (period_in_getNext != 0){
-            offset_next = 0;
-        }
-        _out->printError("offset_weekdays " + std::to_string(offset_weekdays));
-        _out->printError("offset_next " + std::to_string(offset_next));
-        _out->printError("period_in_getNext " + std::to_string(period_in_getNext));
-        _out->printError("follownext " + std::to_string(following_next));
-        _out->printError("tmmday " + std::to_string(tm.tm_mday));
-        _out->printError("next " + std::to_string(next));
-
         if (trigger_in_getNext == "sunrise") {
             if (current_time >= sunriseTime + offset_in_getNext) {
-                if (following_next == 0 && current_weekday >= next){
+                if (following_next == 0 && current_weekday >= next) {
                     offset_weekdays = 7;
                 }
 
-                structnext_time.time = sunriseTime + offset_next * 86400000 + (period_in_getNext * 86400000 * (period_in_getNext * 7));
+                structnext_time.time = sunriseTime + offset_in_getNext + offset_next * 86400000 + offset_weekdays * 86400000 + (period_in_getNext * 86400000 * (period_in_getNext * 7));
                 structnext_time.day = tm.tm_mday + offset_next + (period_in_getNext * 7) + offset_weekdays;
 
                 if (structnext_time.day > days_mmax) {
@@ -569,11 +580,11 @@ MyNode::NextTime MyNode::getNext() {
         if (trigger_in_getNext == "sunset") {
 
             if (current_time >= sunsetTime + offset_in_getNext) {
-                if (following_next == 0 && current_weekday >= next){
+                if (following_next == 0 && current_weekday >= next) {
                     offset_weekdays = 7;
                 }
 
-                structnext_time.time = sunsetTime + offset_next * 86400000 + (period_in_getNext * 86400000 * (period_in_getNext * 7));
+                structnext_time.time = sunsetTime + offset_in_getNext + offset_next * 86400000 + offset_weekdays * 86400000 + (period_in_getNext * 86400000 * (period_in_getNext * 7));
                 structnext_time.day = tm.tm_mday + offset_next + (period_in_getNext * 7) + offset_weekdays;
 
                 if (structnext_time.day > days_mmax) {
@@ -618,9 +629,8 @@ MyNode::NextTime MyNode::getNext() {
         if (trigger_in_getNext == "timepoint") {
             if (current_time >= day_start_in_getNext + timepoint_min_in_getNext) {
 
-
-                structnext_time.time = day_start_in_getNext + timepoint_min_in_getNext + (offset_next * 86400000) + (period_in_getNext * 86400000 * (period_in_getNext * 7));
-                structnext_time.day = tm.tm_mday + offset_next + period_in_getNext * 7;
+                structnext_time.time = day_start_in_getNext + timepoint_min_in_getNext + offset_next * 86400000 + offset_weekdays * 86400000 + (period_in_getNext * 86400000 * (period_in_getNext * 7));
+                structnext_time.day = tm.tm_mday + offset_next + (period_in_getNext * 7) + offset_weekdays;
 
                 if (structnext_time.day > days_mmax) {
                     structnext_time.day = structnext_time.day - days_mmax;
@@ -639,19 +649,9 @@ MyNode::NextTime MyNode::getNext() {
                 return structnext_time;
             }
             if (day_start_in_getNext + timepoint_min_in_getNext > current_time) {
-                _out->printError("current_weekday " + std::to_string(current_weekday));
 
-                if (current_weekday == next){
-                    period_in_getNext = 0;
-                    offset_next = 0;
-                }
-                if (period_in_getNext != 0){
-                    offset_next = 0;
-                }
-
-                structnext_time.time = day_start_in_getNext + timepoint_min_in_getNext + (offset_next * 86400000) + (period_in_getNext * 86400000 * 7);
-                structnext_time.day = tm.tm_mday + offset_next + period_in_getNext * 7;
-
+                structnext_time.time = day_start_in_getNext + timepoint_min_in_getNext + (offset_weekdays * 86400000) + (period_in_getNext * 86400000 * 7);
+                structnext_time.day = tm.tm_mday + period_in_getNext * 7 + offset_weekdays;
 
                 if (structnext_time.day > days_mmax) {
                     structnext_time.day = structnext_time.day - days_mmax;
@@ -735,8 +735,7 @@ void MyNode::printNext(NextTime next) {
 
     next.time = next.time / 1000;
 
-    next.time = next.time % 86400;
-    ;
+    next.time = next.time % 86400;;
     int32_t hours_next = next.time / 3600;
 
     next.time = next.time % 3600;
@@ -744,7 +743,6 @@ void MyNode::printNext(NextTime next) {
     int32_t minutes_next = next.time / 60;
 
     int32_t seconds_next = next.time % 60;
-
 
     std::ostringstream timeStream;
     Flows::PVariable status = std::make_shared<Flows::Variable>(Flows::VariableType::tStruct);
