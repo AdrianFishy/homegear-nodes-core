@@ -272,11 +272,7 @@ MyNode::NextTime MyNode::getNext() {
     bool gap_year;
     int days_mmax = 0;
 
-    if ((year_in_getNext % 100 != 0 && year_in_getNext % 4 == 0) || year_in_getNext % 400 == 0) {
-        gap_year = true;
-    } else {
-        gap_year = false;
-    }
+
 
     tm.tm_mon = tm.tm_mon + 1; //Korrektur da Jan=0,Feb=1,...
 
@@ -287,17 +283,7 @@ MyNode::NextTime MyNode::getNext() {
 
     int current_weekday = tm.tm_wday;
 
-    if (((tm.tm_mon) % 2) == 1) {
-        days_mmax = 31;
-    } else {
-        days_mmax = 30;
-        if (gap_year && tm.tm_mon == 2) {
-            days_mmax = 29;
-        }
-        if (!gap_year && tm.tm_mon == 2) {
-            days_mmax = 28;
-        }
-    }
+    days_mmax = GetDaysMax(tm.tm_mon);
 
     if (period_in_getNext == 1) {
         period_in_getNext = 0;
@@ -312,7 +298,7 @@ MyNode::NextTime MyNode::getNext() {
             }
         }
         if (days_in_getNext == "workday") {
-            if (tm.tm_wday > 5) {
+            if (tm.tm_wday >= 5) {
                 weekday_offset = (tm.tm_wday - 8) * (-1);
                 period_in_getNext = 0;
             }
@@ -325,6 +311,17 @@ MyNode::NextTime MyNode::getNext() {
                 nextday = 0;
             }
         }
+
+        _out->printError("nextday " + std::to_string(nextday));
+        _out->printError("current_weekday " + std::to_string(current_weekday));
+        _out->printError("days_mmax " + std::to_string(days_mmax));
+        _out->printError("tm.tm_mon " + std::to_string(tm.tm_mon));
+        _out->printError("period_in_getNext " + std::to_string(period_in_getNext));
+        _out->printError("weekday_offset " + std::to_string(weekday_offset));
+        _out->printError("nextday " + std::to_string(nextday));
+        _out->printError("nextday " + std::to_string(nextday));
+        _out->printError("nextday " + std::to_string(nextday));
+
 
         if (trigger_in_getNext == "sunrise") {
             if (current_time >= sunriseTime + offset_in_getNext) {
@@ -377,6 +374,7 @@ MyNode::NextTime MyNode::getNext() {
                 return structnext_time;
             }
         }
+
         if (trigger_in_getNext == "sunset") {
             if (current_time >= sunsetTime + offset_in_getNext) {
 
@@ -484,42 +482,40 @@ MyNode::NextTime MyNode::getNext() {
 
     }
     if (type_in_getNext == "weekly") {
-        std::vector<int> WeekdaysFiltered = StringToIntVector(weekdays_in_getNext, "','");
         int next = 0;
         int following_next = 0;
+        std::vector<int> intVectorDays = StringToIntVector(weekdays_in_getNext, ",");
 
-        for (int i = 0; i < 7; i++) {
-            if (WeekdaysFiltered[i] > 0 && WeekdaysFiltered[i] > 0 && WeekdaysFiltered[i] <= 7) {
-                if (WeekdaysFiltered[i] >= current_weekday) {
-                    next = WeekdaysFiltered[i];
+        for (int intVectorDay : intVectorDays) {
+            if (intVectorDay > 0 && intVectorDay <= 7) {
+                if (intVectorDay >= current_weekday) {
+                    next = intVectorDay;
                     break;
                 }
             }
         }
-        for (int j = 0; j < 7; j++) {
-            if (WeekdaysFiltered[j] > 0 && WeekdaysFiltered[j] > 0 && WeekdaysFiltered[j] <= 7) {
-                if (WeekdaysFiltered[j] > next) {
-                    following_next = WeekdaysFiltered[j];
+        for (int intVectorDay : intVectorDays) {
+            if (intVectorDay > 0 && intVectorDay <= 7) {
+                if (intVectorDay > next) {
+                    following_next = intVectorDay;
                     break;
                 }
             }
         }
 
         if (following_next == 0 && next != current_weekday) {
-            for (int j = 7; j >= 0; j--) {
-                if (WeekdaysFiltered[j] < next) {
-                    following_next = WeekdaysFiltered[j];
+            for (int j = intVectorDays.size() - 1; j >= 0; j--) {
+                if (intVectorDays.at(j) < next) {
+                    following_next = intVectorDays.at(j);
                 }
             }
         }
 
         int offset_weekdays = next - current_weekday; //TODO anderer Name
-
+        int offset_next = following_next - next;
         if (offset_weekdays < 0) {
             offset_weekdays = 0;
         }
-
-        int offset_next = following_next - next;
 
         if (offset_next < 0) {
             offset_next = 0;
@@ -528,6 +524,16 @@ MyNode::NextTime MyNode::getNext() {
         if (following_next < current_weekday && following_next > 0) {
             offset_next = 7 - (current_weekday - following_next);
         }
+
+
+        _out->printError("current_weekday " + std::to_string(current_weekday));
+        _out->printError("intVectorDays " + std::to_string(intVectorDays.at(0)));
+        _out->printError("tm.tm_mon " + std::to_string(tm.tm_mon));
+        _out->printError("period_in_getNext " + std::to_string(period_in_getNext));
+        _out->printError("offset_weekdays " + std::to_string(offset_weekdays));
+        _out->printError("offset_next " + std::to_string(offset_next));
+        _out->printError("following_next " + std::to_string(following_next));
+        _out->printError("next " + std::to_string(next));
 
         if (trigger_in_getNext == "sunrise") {
             if (current_time >= sunriseTime + offset_in_getNext) {
@@ -555,6 +561,10 @@ MyNode::NextTime MyNode::getNext() {
                 return structnext_time;
             }
             if (sunriseTime + offset_in_getNext > current_time) {
+
+                if (next == current_weekday){
+                    offset_next = 0;
+                }
 
                 structnext_time.time = sunriseTime + offset_in_getNext + (offset_weekdays * 86400000) + (period_in_getNext * 86400000 * (period_in_getNext * 7));
                 structnext_time.day = tm.tm_mday + period_in_getNext * 7 + offset_weekdays;
@@ -584,7 +594,7 @@ MyNode::NextTime MyNode::getNext() {
                 }
 
                 structnext_time.time = sunsetTime + offset_in_getNext + offset_next * 86400000 + offset_weekdays * 86400000 + (period_in_getNext * 86400000 * (period_in_getNext * 7));
-                structnext_time.day = tm.tm_mday + offset_next + (period_in_getNext * 7) + offset_weekdays;
+                structnext_time.day = tm.tm_mday + (period_in_getNext * 7) + offset_weekdays;
 
                 if (structnext_time.day > days_mmax) {
                     structnext_time.day = structnext_time.day - days_mmax;
@@ -604,8 +614,12 @@ MyNode::NextTime MyNode::getNext() {
             }
             if (sunsetTime + offset_in_getNext > current_time) {
 
+                if (next == current_weekday){
+                    offset_next = 0;
+                }
+
                 structnext_time.time = sunsetTime + offset_in_getNext + (offset_weekdays * 86400000) + (period_in_getNext * 86400000 * 7);
-                structnext_time.day = tm.tm_mday + period_in_getNext * 7 + offset_weekdays;
+                structnext_time.day = tm.tm_mday + period_in_getNext * 7 + offset_weekdays + offset_next;
 
                 if (structnext_time.day > days_mmax) {
                     structnext_time.day = structnext_time.day - days_mmax;
@@ -672,76 +686,46 @@ MyNode::NextTime MyNode::getNext() {
         }
     }
     if (type_in_getNext == "monthly") {
-        std::string MonthdaysFiltered = stringFilter(days_number_in_getNext, "','");
-        char Monthdays_array[MonthdaysFiltered.length() + 1];
         int next = 0;
         int following_next = 0;
-        strcpy(Monthdays_array, MonthdaysFiltered.c_str());
-        int offset_Monthdays;
+        int offset_Monthdays = 0;
         int current_Monthday = tm.tm_mday;
+        int current_Month = tm.tm_mon;
+        int next_trigger = 0;
+        next = 0;
+        following_next = 0;
         _out->printError("days_number_in_getNext " + days_number_in_getNext);
-        _out->printError("MonthdaysFiltered " + MonthdaysFiltered);
 
-        int meineZahl;
-        _out->printError("days_number_in_getNext.length() " + std::to_string(days_number_in_getNext.length()));
-        _out->printError("days_number_in_getNext.at(0) " + std::to_string(days_number_in_getNext.at(1) - 48));
 
-        int j = 0;
-
-        char test6 = days_number_in_getNext.at(0);
-        char test7 = days_number_in_getNext.at(1);
-        char test8 = days_number_in_getNext.at(2);
-        char test9 = days_number_in_getNext.at(3);
-        char test10 = days_number_in_getNext.at(4);
-        char test11 = days_number_in_getNext.at(5);
-        char test12 = days_number_in_getNext.at(6);
-        char test13 = days_number_in_getNext.at(7);
-
-        _out->printError("test6 " + std::to_string(test6));
-        _out->printError("test7 " + std::to_string(test7));
-        _out->printError("test8 " + std::to_string(test8));
-        _out->printError("test9 " + std::to_string(test9));
-        _out->printError("test10 " + std::to_string(test10));
-        _out->printError("test11 " + std::to_string(test11));
-        _out->printError("test12 " + std::to_string(test12));
-        _out->printError("test13 " + std::to_string(test13));
-
-        //1,15,20,30
-
-        std::vector tokens = StringToIntVector(days_number_in_getNext, ",");
-
-        _out->printError("tokens " + std::to_string(tokens.at(0)));
-        _out->printError("tokens " + std::to_string(tokens.at(1)));
-        _out->printError("tokens " + std::to_string(tokens.at(2)));
-
-        for (int i = 0; i < 31; i++) {
-            _out->printError("Monthdays_array[i] - 48 " + std::to_string(Monthdays_array[i] - 48));
-            int test = Monthdays_array[i];
-            _out->printError("test " + std::to_string(test));
-            if (Monthdays_array[i] > 0 && Monthdays_array[i] - 48 > 0 && Monthdays_array[i] - 48 <= 7) {
-                if (Monthdays_array[i] - 48 >= current_weekday) {
-                    next = Monthdays_array[i] - 48;
-                    _out->printError("Monthdays_array[i] - 48 " + std::to_string(Monthdays_array[i] - 48));
-                    break;
-                }
-            }
-        }
-        for (int j = 0; j < 31; j++) {
-            if (Monthdays_array[j] > 0 && Monthdays_array[j] - 48 > 0 && Monthdays_array[j] - 48 <= 7) {
-                if (Monthdays_array[j] - 48 > next) {
-                    following_next = Monthdays_array[j] - 48;
+        std::vector<int> intVectorWeekdays = StringToIntVector(days_number_in_getNext, ",");
+        for (int intVectorWeekday : intVectorWeekdays) {
+            if (intVectorWeekday > 0 && intVectorWeekday  <= 31) {
+                if (intVectorWeekday  >= current_Monthday) {
+                    next = intVectorWeekday ;
                     break;
                 }
             }
         }
 
-        if (following_next == 0 && next != current_weekday) {
-            for (int j = 31; j >= 0; j--) {
-                if (Monthdays_array[j] - 48 < next) {
-                    following_next = Monthdays_array[j] - 48;
+        for (int intVectorWeekday : intVectorWeekdays) {
+            if (intVectorWeekday > 0 && intVectorWeekday  <= 31) {
+                if (intVectorWeekday  > next) {
+                    following_next = intVectorWeekday ;
+                    break;
                 }
             }
         }
+        _out->printError("intVectorWeekdays.size() " + std::to_string(intVectorWeekdays.size()));
+
+        if (following_next == 0 && next != current_Monthday) {
+            for (int j = intVectorWeekdays.size() - 1 ; j >= 0; j--) {
+                if (intVectorWeekdays.at(j) < next) {
+                    following_next = intVectorWeekdays.at(j) ;
+                }
+            }
+        }
+
+        offset_Monthdays = next - current_Monthday;
 
         if (offset_Monthdays < 0) {
             offset_Monthdays = 0;
@@ -753,10 +737,24 @@ MyNode::NextTime MyNode::getNext() {
             offset_next = 0;
         }
 
-        if (following_next < current_weekday && following_next > 0) {
-            offset_next = 31 - (current_weekday - following_next);
+        if (following_next < current_Monthday && following_next > 0) {
+            offset_next = 31 - (current_Monthday - following_next);
         }
 
+
+        if (next >= current_Monthday){
+            next_trigger = next;
+        }
+
+        if (following_next < current_Monthday && following_next != 0 ){
+            next_trigger = following_next;
+        }
+
+        if (following_next == next){
+            next_trigger = current_Monthday;
+        }
+
+        _out->printError("next_trigger " + std::to_string(next_trigger));
         _out->printError("next " + std::to_string(next));
         _out->printError("following_next " + std::to_string(following_next));
         _out->printError("offset_Monthdays " + std::to_string(offset_Monthdays));
@@ -764,7 +762,55 @@ MyNode::NextTime MyNode::getNext() {
         _out->printError("current_Monthday " + std::to_string(current_Monthday));
 
         if (trigger_in_getNext == "sunrise") {
+            if (current_time >= sunriseTime + offset_in_getNext) {
 
+                if (next < current_Monthday ) {
+                    structnext_time.month = current_Month + 1 + period_in_getNext;
+                } else {
+                    structnext_time.month = current_Month + period_in_getNext;
+                }
+
+                _out->printError("structnext_time.month " + std::to_string(structnext_time.month));
+
+                if (next > GetDaysMaxThisMonth(structnext_time.month)){
+                    next = GetDaysMaxThisMonth(structnext_time.month);
+                }
+
+                structnext_time.time = sunriseTime + offset_in_getNext + offset_Monthdays * 86400000 + following_next * 86400000 + period_in_getNext * next * 86400000 ;
+                structnext_time.day = next_trigger;
+
+                _out->printError("current_Month " + std::to_string(tm.tm_mon));
+
+                if (structnext_time.month >= 12) {
+                    structnext_time.month = structnext_time.month - 12;
+                    structnext_time.year = year_in_getNext + 1;
+                } else {
+                    structnext_time.year = year_in_getNext;
+                }
+
+                return structnext_time;
+            }
+            if (sunriseTime + offset_in_getNext > current_time) {
+
+                structnext_time.time = sunriseTime + offset_in_getNext + (offset_Monthdays * 86400000) + (period_in_getNext * 86400000 * (period_in_getNext * 7));
+                structnext_time.day = tm.tm_mday + period_in_getNext * 7 + offset_Monthdays;
+
+                if (structnext_time.day > days_mmax) {
+                    structnext_time.day = structnext_time.day - days_mmax;
+                    structnext_time.month = month_in_getNext + 1;
+                } else {
+                    structnext_time.month = month_in_getNext;
+                }
+
+                if (structnext_time.month >= 12) {
+                    structnext_time.month = structnext_time.month - 12;
+                    structnext_time.year = year_in_getNext + 1;
+                } else {
+                    structnext_time.year = year_in_getNext;
+                }
+
+                return structnext_time;
+            }
         }
         if (trigger_in_getNext == "sunset") {
 
@@ -786,6 +832,62 @@ MyNode::NextTime MyNode::getNext() {
         }
 
     }
+
+}
+
+int MyNode::GetDaysMax(int currentMonth){
+    std::tm tm{};
+    _sunTime.getTimeStruct(tm);
+    int month_in_getNext = tm.tm_year / 100;
+    int year_in_getNext = (tm.tm_year - (month_in_getNext * 100)) + 2000;
+    bool gap_year;
+    int days_mmax = 0;
+
+    if ((year_in_getNext % 100 != 0 && year_in_getNext % 4 == 0) || year_in_getNext % 400 == 0) {
+        gap_year = true;
+    } else {
+        gap_year = false;
+    }
+    if (((tm.tm_mon + 1) % 2) == 1) {
+        days_mmax = 31;
+    } else {
+        days_mmax = 30;
+        if (gap_year && tm.tm_mon == 2) {
+            days_mmax = 29;
+        }
+        if (!gap_year && tm.tm_mon == 2) {
+            days_mmax = 28;
+        }
+    }
+    return days_mmax;
+
+}
+
+int MyNode::GetDaysMaxThisMonth(int thisMonth){
+    std::tm tm{};
+    _sunTime.getTimeStruct(tm);
+    int month = tm.tm_year / 100;
+    int year = (tm.tm_year - (month * 100)) + 2000;
+    bool gap_year;
+    int days_mmax = 0;
+
+    if ((year % 100 != 0 && year % 4 == 0) || year % 400 == 0) {
+        gap_year = true;
+    } else {
+        gap_year = false;
+    }
+    if (((thisMonth) % 2) == 1) {
+        days_mmax = 31;
+    } else {
+        days_mmax = 30;
+        if (gap_year && tm.tm_mon == 2) {
+            days_mmax = 29;
+        }
+        if (!gap_year && tm.tm_mon == 2) {
+            days_mmax = 28;
+        }
+    }
+    return days_mmax;
 
 }
 
