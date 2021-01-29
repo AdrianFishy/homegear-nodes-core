@@ -71,7 +71,7 @@
             period: {value: "1", validate:RED.validators.number(), required: true},
             weekdays: {value: "0"},
             days: {value: "everyday"},
-            daysnumber: {value: "0", validate:RED.validators.number()},
+            daysnumber: {value: "0"},
             month: {value: "0", validate:RED.validators.number()}
 
         },

@@ -29,6 +29,7 @@
 
 #include <cstring>
 #include "MyNode.h"
+#include <sstream>
 
 namespace Timer2 {
 
@@ -87,7 +88,7 @@ bool MyNode::init(const Flows::PNodeInfo &info) {
 
         settingsIterator = info->info->structValue->find("daysnumber");
         if (settingsIterator != info->info->structValue->end())
-            _daysNumber = Flows::Math::getNumber(settingsIterator->second->stringValue);
+            _daysNumber = settingsIterator->second->stringValue;
 
         settingsIterator = info->info->structValue->find("month");
         if (settingsIterator != info->info->structValue->end())
@@ -253,7 +254,7 @@ MyNode::NextTime MyNode::getNext() {
     int64_t offset_in_getNext = _onOffset * 1000 * 60;
     int64_t period_in_getNext = _period;
     std::string days_in_getNext = _days;
-    int64_t days_number_in_getNext = _daysNumber;
+    std::string days_number_in_getNext = _daysNumber;
     int64_t months_in_getNext;
     std::string weekdays_in_getNext = _weekdays;
     int64_t current_time = _sunTime.getLocalTime();
@@ -388,7 +389,7 @@ MyNode::NextTime MyNode::getNext() {
                 }
 
                 structnext_time.time = sunsetTime + offset_in_getNext + (weekday_offset * 86400000) + (period_in_getNext * 86400000) + nextday * 86400000;
-                structnext_time.day = tm.tm_mday + weekday_offset + period_in_getNext +nextday;
+                structnext_time.day = tm.tm_mday + weekday_offset + period_in_getNext + nextday;
 
                 if (structnext_time.day > days_mmax) {
                     structnext_time.day = structnext_time.day - days_mmax;
@@ -483,24 +484,22 @@ MyNode::NextTime MyNode::getNext() {
 
     }
     if (type_in_getNext == "weekly") {
-        std::string WeekdaysFiltered = stringFilter(weekdays_in_getNext, "','");
-        char weekdays_array[WeekdaysFiltered.length() + 1];
+        std::vector<int> WeekdaysFiltered = StringToIntVector(weekdays_in_getNext, "','");
         int next = 0;
         int following_next = 0;
-        strcpy(weekdays_array, WeekdaysFiltered.c_str());
 
         for (int i = 0; i < 7; i++) {
-            if (weekdays_array[i] > 0 && weekdays_array[i] - 48 > 0 && weekdays_array[i] - 48 <= 7) {
-                if (weekdays_array[i] - 48 >= current_weekday) {
-                    next = weekdays_array[i] - 48;
+            if (WeekdaysFiltered[i] > 0 && WeekdaysFiltered[i] > 0 && WeekdaysFiltered[i] <= 7) {
+                if (WeekdaysFiltered[i] >= current_weekday) {
+                    next = WeekdaysFiltered[i];
                     break;
                 }
             }
         }
         for (int j = 0; j < 7; j++) {
-            if (weekdays_array[j] > 0 && weekdays_array[j] - 48 > 0 && weekdays_array[j] - 48 <= 7) {
-                if (weekdays_array[j] - 48 > next) {
-                    following_next = weekdays_array[j] - 48;
+            if (WeekdaysFiltered[j] > 0 && WeekdaysFiltered[j] > 0 && WeekdaysFiltered[j] <= 7) {
+                if (WeekdaysFiltered[j] > next) {
+                    following_next = WeekdaysFiltered[j];
                     break;
                 }
             }
@@ -508,8 +507,8 @@ MyNode::NextTime MyNode::getNext() {
 
         if (following_next == 0 && next != current_weekday) {
             for (int j = 7; j >= 0; j--) {
-                if (weekdays_array[j] - 48 < next) {
-                    following_next = weekdays_array[j] - 48;
+                if (WeekdaysFiltered[j] < next) {
+                    following_next = WeekdaysFiltered[j];
                 }
             }
         }
@@ -673,6 +672,97 @@ MyNode::NextTime MyNode::getNext() {
         }
     }
     if (type_in_getNext == "monthly") {
+        std::string MonthdaysFiltered = stringFilter(days_number_in_getNext, "','");
+        char Monthdays_array[MonthdaysFiltered.length() + 1];
+        int next = 0;
+        int following_next = 0;
+        strcpy(Monthdays_array, MonthdaysFiltered.c_str());
+        int offset_Monthdays;
+        int current_Monthday = tm.tm_mday;
+        _out->printError("days_number_in_getNext " + days_number_in_getNext);
+        _out->printError("MonthdaysFiltered " + MonthdaysFiltered);
+
+        int meineZahl;
+        _out->printError("days_number_in_getNext.length() " + std::to_string(days_number_in_getNext.length()));
+        _out->printError("days_number_in_getNext.at(0) " + std::to_string(days_number_in_getNext.at(1) - 48));
+
+        int j = 0;
+
+        char test6 = days_number_in_getNext.at(0);
+        char test7 = days_number_in_getNext.at(1);
+        char test8 = days_number_in_getNext.at(2);
+        char test9 = days_number_in_getNext.at(3);
+        char test10 = days_number_in_getNext.at(4);
+        char test11 = days_number_in_getNext.at(5);
+        char test12 = days_number_in_getNext.at(6);
+        char test13 = days_number_in_getNext.at(7);
+
+        _out->printError("test6 " + std::to_string(test6));
+        _out->printError("test7 " + std::to_string(test7));
+        _out->printError("test8 " + std::to_string(test8));
+        _out->printError("test9 " + std::to_string(test9));
+        _out->printError("test10 " + std::to_string(test10));
+        _out->printError("test11 " + std::to_string(test11));
+        _out->printError("test12 " + std::to_string(test12));
+        _out->printError("test13 " + std::to_string(test13));
+
+        //1,15,20,30
+
+        std::vector tokens = StringToIntVector(days_number_in_getNext, ",");
+
+        _out->printError("tokens " + std::to_string(tokens.at(0)));
+        _out->printError("tokens " + std::to_string(tokens.at(1)));
+        _out->printError("tokens " + std::to_string(tokens.at(2)));
+
+        for (int i = 0; i < 31; i++) {
+            _out->printError("Monthdays_array[i] - 48 " + std::to_string(Monthdays_array[i] - 48));
+            int test = Monthdays_array[i];
+            _out->printError("test " + std::to_string(test));
+            if (Monthdays_array[i] > 0 && Monthdays_array[i] - 48 > 0 && Monthdays_array[i] - 48 <= 7) {
+                if (Monthdays_array[i] - 48 >= current_weekday) {
+                    next = Monthdays_array[i] - 48;
+                    _out->printError("Monthdays_array[i] - 48 " + std::to_string(Monthdays_array[i] - 48));
+                    break;
+                }
+            }
+        }
+        for (int j = 0; j < 31; j++) {
+            if (Monthdays_array[j] > 0 && Monthdays_array[j] - 48 > 0 && Monthdays_array[j] - 48 <= 7) {
+                if (Monthdays_array[j] - 48 > next) {
+                    following_next = Monthdays_array[j] - 48;
+                    break;
+                }
+            }
+        }
+
+        if (following_next == 0 && next != current_weekday) {
+            for (int j = 31; j >= 0; j--) {
+                if (Monthdays_array[j] - 48 < next) {
+                    following_next = Monthdays_array[j] - 48;
+                }
+            }
+        }
+
+        if (offset_Monthdays < 0) {
+            offset_Monthdays = 0;
+        }
+
+        int offset_next = following_next - next;
+
+        if (offset_next < 0) {
+            offset_next = 0;
+        }
+
+        if (following_next < current_weekday && following_next > 0) {
+            offset_next = 31 - (current_weekday - following_next);
+        }
+
+        _out->printError("next " + std::to_string(next));
+        _out->printError("following_next " + std::to_string(following_next));
+        _out->printError("offset_Monthdays " + std::to_string(offset_Monthdays));
+        _out->printError("offset_next " + std::to_string(offset_next));
+        _out->printError("current_Monthday " + std::to_string(current_Monthday));
+
         if (trigger_in_getNext == "sunrise") {
 
         }
@@ -715,6 +805,25 @@ std::string MyNode::getDateString(int64_t time) {
     std::ostringstream timeStream;
     timeStream << timeString;
     return timeStream.str();
+}
+
+std::vector<int> MyNode::StringToIntVector(const std::string &str, const std::string &delim) {
+    std::vector<std::string> tokens;
+    std::vector<int> intNumbers;
+    size_t prev = 0, pos = 0;
+    do {
+        pos = str.find(delim, prev);
+        if (pos == std::string::npos) pos = str.length();
+        std::string token = str.substr(prev, pos - prev);
+        if (!token.empty()) tokens.push_back(token);
+        prev = pos + delim.length();
+    } while (pos < str.length() && prev < str.length());
+
+    for (int i = 0; i < tokens.size(); i++) {
+        int num = atoi(tokens.at(i).c_str());
+        intNumbers.push_back(num);
+    }
+    return intNumbers;
 }
 
 std::string MyNode::stringFilter(const std::string &to, const std::string &remove) {

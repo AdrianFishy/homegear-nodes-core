@@ -35,6 +35,7 @@
 #include <thread>
 #include <mutex>
 
+
 namespace Timer2 {
 
 class MyNode : public Flows::INode {
@@ -67,7 +68,7 @@ class MyNode : public Flows::INode {
   int64_t _timepoint;
   int64_t _period;
   std::string _days;
-  int64_t _daysNumber;
+  std::string _daysNumber;
   int64_t _months;
   std::string _weekdays;
   int64_t _lastTime;
@@ -88,6 +89,7 @@ class MyNode : public Flows::INode {
   void printNext(NextTime next);
   std::string stringFilter(const std::string &to, const std::string &remove);
   std::array<int64_t, 100> ConvertStrtoArr(std::string timepoint);
+  std::vector<int> StringToIntVector(const std::string& str, const std::string& delim);
 
 };
 
