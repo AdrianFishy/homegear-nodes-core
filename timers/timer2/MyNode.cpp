@@ -92,7 +92,7 @@ bool MyNode::init(const Flows::PNodeInfo &info) {
 
         settingsIterator = info->info->structValue->find("month");
         if (settingsIterator != info->info->structValue->end())
-            _months = Flows::Math::getNumber(settingsIterator->second->stringValue);
+            _months = settingsIterator->second->stringValue;
 
         return true;
     }
@@ -503,7 +503,7 @@ MyNode::NextTime MyNode::getNext() {
             }
         }
 
-        if (following_next == 0 && next != current_weekday) {
+        if (following_next == 0 && next == current_weekday) {
             for (int j = intVectorDays.size() - 1; j >= 0; j--) {
                 if (intVectorDays.at(j) < next) {
                     following_next = intVectorDays.at(j);
@@ -662,6 +662,9 @@ MyNode::NextTime MyNode::getNext() {
                 return structnext_time;
             }
             if (day_start_in_getNext + timepoint_min_in_getNext > current_time) {
+                if (next == current_weekday){
+                    offset_next = 0;
+                }
 
                 structnext_time.time = day_start_in_getNext + timepoint_min_in_getNext + (offset_weekdays * 86400000) + (period_in_getNext * 86400000 * 7);
                 structnext_time.day = tm.tm_mday + period_in_getNext * 7 + offset_weekdays;
@@ -694,64 +697,50 @@ MyNode::NextTime MyNode::getNext() {
         int next_trigger = 0;
         next = 0;
         following_next = 0;
-        _out->printError("days_number_in_getNext " + days_number_in_getNext);
+        offset_in_getNext = 0;
 
+        _out->printError("days_number_in_getNext " + days_number_in_getNext);
 
         std::vector<int> intVectorWeekdays = StringToIntVector(days_number_in_getNext, ",");
         for (int intVectorWeekday : intVectorWeekdays) {
-            if (intVectorWeekday > 0 && intVectorWeekday  <= 31) {
-                if (intVectorWeekday  >= current_Monthday) {
-                    next = intVectorWeekday ;
+            if (intVectorWeekday > 0 && intVectorWeekday <= days_mmax) {
+                if (intVectorWeekday >= current_Monthday) {
+                    next = intVectorWeekday;
                     break;
                 }
             }
         }
 
         for (int intVectorWeekday : intVectorWeekdays) {
-            if (intVectorWeekday > 0 && intVectorWeekday  <= 31) {
-                if (intVectorWeekday  > next) {
-                    following_next = intVectorWeekday ;
+            if (intVectorWeekday > 0 && intVectorWeekday <= days_mmax) {
+                if (intVectorWeekday > next) {
+                    following_next = intVectorWeekday;
                     break;
                 }
             }
         }
         _out->printError("intVectorWeekdays.size() " + std::to_string(intVectorWeekdays.size()));
 
-        if (following_next == 0 && next != current_Monthday) {
-            for (int j = intVectorWeekdays.size() - 1 ; j >= 0; j--) {
+        if (following_next == 0 && next == current_Monthday) {
+            for (int j = intVectorWeekdays.size() - 1; j >= 0; j--) {
                 if (intVectorWeekdays.at(j) < next) {
-                    following_next = intVectorWeekdays.at(j) ;
+                    following_next = intVectorWeekdays.at(j);
                 }
             }
         }
 
-        offset_Monthdays = next - current_Monthday;
-
+        offset_Monthdays = next - current_Monthday; //TODO anderer Name
+        int offset_next = following_next - next;
         if (offset_Monthdays < 0) {
             offset_Monthdays = 0;
         }
-
-        int offset_next = following_next - next;
 
         if (offset_next < 0) {
             offset_next = 0;
         }
 
-        if (following_next < current_Monthday && following_next > 0) {
-            offset_next = 31 - (current_Monthday - following_next);
-        }
-
-
-        if (next >= current_Monthday){
-            next_trigger = next;
-        }
-
-        if (following_next < current_Monthday && following_next != 0 ){
-            next_trigger = following_next;
-        }
-
-        if (following_next == next){
-            next_trigger = current_Monthday;
+        if (following_next < current_weekday && following_next > 0) {
+            offset_next = days_mmax - (current_Monthday - following_next);
         }
 
         _out->printError("next_trigger " + std::to_string(next_trigger));
@@ -760,26 +749,32 @@ MyNode::NextTime MyNode::getNext() {
         _out->printError("offset_Monthdays " + std::to_string(offset_Monthdays));
         _out->printError("offset_next " + std::to_string(offset_next));
         _out->printError("current_Monthday " + std::to_string(current_Monthday));
+        _out->printError("period_in_getNext " + std::to_string(period_in_getNext));
 
         if (trigger_in_getNext == "sunrise") {
             if (current_time >= sunriseTime + offset_in_getNext) {
+                if (following_next == 0 && current_Monthday >= next) {
+                    offset_Monthdays = days_mmax;
+                }
 
-                if (next < current_Monthday ) {
-                    structnext_time.month = current_Month + 1 + period_in_getNext;
+                structnext_time.time = sunriseTime + offset_in_getNext + offset_next * 86400000 + offset_Monthdays * 86400000 + (period_in_getNext * 86400000 * (period_in_getNext * days_mmax));
+                structnext_time.day = tm.tm_mday + offset_next + (period_in_getNext * days_mmax) + offset_Monthdays;
+
+                if (structnext_time.day > days_mmax) {
+                    structnext_time.day = structnext_time.day - (days_mmax * period_in_getNext);
+                    structnext_time.month = month_in_getNext + period_in_getNext + 1;
+
+                    if (structnext_time.day > GetDaysMaxThisMonth(structnext_time.month)){
+
+                        structnext_time.day = GetDaysMaxThisMonth(structnext_time.month);
+                        int diff = structnext_time.day - GetDaysMaxThisMonth(structnext_time.month);
+                        structnext_time.time = structnext_time.time - diff * 86400000;
+
+                    }
+
                 } else {
-                    structnext_time.month = current_Month + period_in_getNext;
+                    structnext_time.month = month_in_getNext;
                 }
-
-                _out->printError("structnext_time.month " + std::to_string(structnext_time.month));
-
-                if (next > GetDaysMaxThisMonth(structnext_time.month)){
-                    next = GetDaysMaxThisMonth(structnext_time.month);
-                }
-
-                structnext_time.time = sunriseTime + offset_in_getNext + offset_Monthdays * 86400000 + following_next * 86400000 + period_in_getNext * next * 86400000 ;
-                structnext_time.day = next_trigger;
-
-                _out->printError("current_Month " + std::to_string(tm.tm_mon));
 
                 if (structnext_time.month >= 12) {
                     structnext_time.month = structnext_time.month - 12;
@@ -792,12 +787,24 @@ MyNode::NextTime MyNode::getNext() {
             }
             if (sunriseTime + offset_in_getNext > current_time) {
 
-                structnext_time.time = sunriseTime + offset_in_getNext + (offset_Monthdays * 86400000) + (period_in_getNext * 86400000 * (period_in_getNext * 7));
-                structnext_time.day = tm.tm_mday + period_in_getNext * 7 + offset_Monthdays;
+                if (next == current_Monthday) {
+                    offset_next = 0;
+                }
+
+                structnext_time.time = sunriseTime + offset_in_getNext + (offset_Monthdays * 86400000) + (period_in_getNext * 86400000 * (period_in_getNext * days_mmax));
+                structnext_time.day = tm.tm_mday + period_in_getNext * days_mmax + offset_Monthdays;
 
                 if (structnext_time.day > days_mmax) {
-                    structnext_time.day = structnext_time.day - days_mmax;
-                    structnext_time.month = month_in_getNext + 1;
+                    structnext_time.day = structnext_time.day - (days_mmax * period_in_getNext);
+                    structnext_time.month = month_in_getNext + period_in_getNext;
+
+                    if (structnext_time.day > GetDaysMaxThisMonth(structnext_time.month)){
+
+                        structnext_time.day = GetDaysMaxThisMonth(structnext_time.month);
+                        int diff = structnext_time.day - GetDaysMaxThisMonth(structnext_time.month);
+                        structnext_time.time = structnext_time.time - diff * 86400000;
+
+                    }
                 } else {
                     structnext_time.month = month_in_getNext;
                 }
@@ -814,22 +821,463 @@ MyNode::NextTime MyNode::getNext() {
         }
         if (trigger_in_getNext == "sunset") {
 
+            if (current_time >= sunsetTime + offset_in_getNext) {
+                if (following_next == 0 && current_weekday >= next) {
+                    offset_Monthdays = days_mmax;
+                }
+
+                structnext_time.time = sunsetTime + offset_in_getNext + offset_next * 86400000 + offset_Monthdays * 86400000 + (period_in_getNext * 86400000 * (period_in_getNext * days_mmax));
+                structnext_time.day = tm.tm_mday + (period_in_getNext * days_mmax) + offset_Monthdays;
+
+                if (structnext_time.day > days_mmax) {
+                    structnext_time.day = structnext_time.day - (days_mmax * period_in_getNext);
+                    structnext_time.month = month_in_getNext + period_in_getNext;
+
+                    if (structnext_time.day > GetDaysMaxThisMonth(structnext_time.month)){
+
+                        structnext_time.day = GetDaysMaxThisMonth(structnext_time.month);
+                        int diff = structnext_time.day - GetDaysMaxThisMonth(structnext_time.month);
+                        structnext_time.time = structnext_time.time - diff * 86400000;
+
+                    }
+
+                } else {
+                    structnext_time.month = month_in_getNext;
+                }
+
+                if (structnext_time.month >= 12) {
+                    structnext_time.month = structnext_time.month - 12;
+                    structnext_time.year = year_in_getNext + 1;
+                } else {
+                    structnext_time.year = year_in_getNext;
+                }
+
+                return structnext_time;
+            }
+            if (sunsetTime + offset_in_getNext > current_time) {
+
+                if (next == current_Monthday) {
+                    offset_next = 0;
+                }
+
+                structnext_time.time = sunsetTime + offset_in_getNext + (offset_Monthdays * 86400000) + (period_in_getNext * 86400000 * days_mmax);
+                structnext_time.day = tm.tm_mday + period_in_getNext * days_mmax + offset_Monthdays + offset_next;
+
+                if (structnext_time.day > days_mmax) {
+                    structnext_time.day = structnext_time.day - (days_mmax * period_in_getNext);
+                    structnext_time.month = month_in_getNext + period_in_getNext;
+
+                    if (structnext_time.day > GetDaysMaxThisMonth(structnext_time.month)){
+
+                        structnext_time.day = GetDaysMaxThisMonth(structnext_time.month);
+                        int diff = structnext_time.day - GetDaysMaxThisMonth(structnext_time.month);
+                        structnext_time.time = structnext_time.time - diff * 86400000;
+
+                    }
+
+                } else {
+                    structnext_time.month = month_in_getNext;
+                }
+
+                if (structnext_time.month >= 12) {
+                    structnext_time.month = structnext_time.month - 12;
+                    structnext_time.year = year_in_getNext + 1;
+                } else {
+                    structnext_time.year = year_in_getNext;
+                }
+
+                return structnext_time;
+            }
+
         }
         if (trigger_in_getNext == "timepoint") {
+            if (current_time >= day_start_in_getNext + timepoint_min_in_getNext) {
+
+                structnext_time.time = day_start_in_getNext + timepoint_min_in_getNext + offset_next * 86400000 + offset_Monthdays * 86400000 + (period_in_getNext * 86400000 * (period_in_getNext * days_mmax));
+                structnext_time.day = tm.tm_mday + offset_next + (period_in_getNext * days_mmax) + offset_Monthdays;
+
+                if (structnext_time.day > days_mmax) {
+                    structnext_time.day = structnext_time.day - days_mmax;
+                    structnext_time.month = month_in_getNext + 1;
+
+                    if (structnext_time.day > GetDaysMaxThisMonth(structnext_time.month)){
+
+                        structnext_time.day = GetDaysMaxThisMonth(structnext_time.month);
+                        int diff = structnext_time.day - GetDaysMaxThisMonth(structnext_time.month);
+                        structnext_time.time = structnext_time.time - diff * 86400000;
+
+                    }
+
+                } else {
+                    structnext_time.month = month_in_getNext;
+                }
+
+                if (structnext_time.month >= 12) {
+                    structnext_time.month = structnext_time.month - 12;
+                    structnext_time.year = year_in_getNext + 1;
+                } else {
+                    structnext_time.year = year_in_getNext;
+                }
+
+                return structnext_time;
+            }
+            if (day_start_in_getNext + timepoint_min_in_getNext > current_time) {
+                if (next == current_weekday) {
+                    offset_next = days_mmax;
+                }
+
+                structnext_time.time = day_start_in_getNext + timepoint_min_in_getNext + (offset_Monthdays * 86400000) + (period_in_getNext * 86400000 * days_mmax);
+                structnext_time.day = tm.tm_mday + period_in_getNext * days_mmax + offset_Monthdays;
+
+                if (structnext_time.day > days_mmax) {
+                    structnext_time.day = structnext_time.day - days_mmax;
+                    structnext_time.month = month_in_getNext + 1;
+
+                    if (structnext_time.day > GetDaysMaxThisMonth(structnext_time.month)){
+
+                        structnext_time.day = GetDaysMaxThisMonth(structnext_time.month);
+                        int diff = structnext_time.day - GetDaysMaxThisMonth(structnext_time.month);
+                        structnext_time.time = structnext_time.time - diff * 86400000;
+
+                    }
+
+                } else {
+                    structnext_time.month = month_in_getNext;
+                }
+
+                if (structnext_time.month >= 12) {
+                    structnext_time.month = structnext_time.month - 12;
+                    structnext_time.year = year_in_getNext + 1;
+                } else {
+                    structnext_time.year = year_in_getNext;
+                }
+
+                return structnext_time;
+            }
 
         }
-
     }
     if (type_in_getNext == "yearly") {
-        if (trigger_in_getNext == "sunrise") {
+        int next = 0;
+        int following_next = 0;
+        int offset_Monthdays = 0;
+        int current_Monthday = tm.tm_mday;
+        int next_trigger = 0;
+        offset_in_getNext = 0;
+        std::string Month = _months;
+        int current_Month = month_in_getNext;
+        int next_month = 0;
+        int following_next_month = 0;
+        int offset_Month = 0;
 
+
+        _out->printError("days_number_in_getNext " + days_number_in_getNext);
+
+        std::vector<int> intVectorMonthdays = StringToIntVector(days_number_in_getNext, ",");
+        for (int intVectorMonthday : intVectorMonthdays) {
+            if (intVectorMonthday > 0 && intVectorMonthday <= days_mmax) {
+                if (intVectorMonthday >= current_Monthday) {
+                    next = intVectorMonthday;
+                    break;
+                }
+            }
+        }
+
+        for (int intVectorMonthday : intVectorMonthdays) {
+            if (intVectorMonthday > 0 && intVectorMonthday <= days_mmax) {
+                if (intVectorMonthday > next) {
+                    following_next = intVectorMonthday;
+                    break;
+                }
+            }
+        }
+        _out->printError("intVectorMonthdays.size() " + std::to_string(intVectorMonthdays.size()));
+
+        if (following_next == 0 && next == current_Monthday) {
+            for (int j = intVectorMonthdays.size() - 1; j >= 0; j--) {
+                if (intVectorMonthdays.at(j) < next) {
+                    following_next = intVectorMonthdays.at(j);
+                }
+            }
+        }
+
+        offset_Monthdays = next - current_Monthday; //TODO anderer Name
+        int offset_next = following_next - next;
+        if (offset_Monthdays < 0) {
+            offset_Monthdays = 0;
+        }
+
+        if (offset_next < 0) {
+            offset_next = 0;
+        }
+
+        if (following_next < current_weekday && following_next > 0) {
+            offset_next = days_mmax - (current_Monthday - following_next);
+        }
+
+        std::vector<int> intVectorMonths = StringToIntVector(Month, ",");
+
+        for (int intVectorMonth : intVectorMonths) {
+            if (intVectorMonth > 0 && intVectorMonth <= 12) {
+                if (intVectorMonth >= current_Month) {
+                    next_month = intVectorMonth;
+                    break;
+                }
+            }
+        }
+
+        for (int intVectorMonth : intVectorMonths) {
+            if (intVectorMonth > 0 && intVectorMonth <= 12) {
+                if (intVectorMonth > next_month) {
+                    following_next_month = intVectorMonth;
+                    break;
+                }
+            }
+        }
+
+        if (following_next_month == 0 && next_month == current_Month) {
+            for (int j = intVectorMonths.size() - 1; j >= 0; j--) {
+                if (intVectorMonths.at(j) < next_month) {
+                    following_next_month = intVectorMonths.at(j);
+                }
+            }
+        }
+
+        offset_Month = next_month - current_Month; //TODO anderer Name
+        int offset_next_month = following_next_month - next_month;
+        if (offset_Month < 0) {
+            offset_Month = 0;
+        }
+
+        if (offset_next_month < 0) {
+            offset_next_month = 0;
+        }
+
+        if (following_next < current_Month && following_next_month > 0) {
+            offset_next_month = 12 - (current_Month - following_next_month);
+        }
+
+
+
+        _out->printError("next_trigger " + std::to_string(next_trigger));
+        _out->printError("next " + std::to_string(next));
+        _out->printError("following_next " + std::to_string(following_next));
+        _out->printError("offset_Monthdays " + std::to_string(offset_Monthdays));
+        _out->printError("offset_next " + std::to_string(offset_next));
+        _out->printError("offset_Month " + std::to_string(offset_Month));
+        _out->printError("following_next_month " + std::to_string(following_next_month));
+        _out->printError("next_month " + std::to_string(next_month));
+        _out->printError("current_Month " + std::to_string(current_Month));
+        _out->printError("offset_next_month " + std::to_string(offset_next_month));
+
+
+
+        if (trigger_in_getNext == "sunrise") {
+            if (current_time >= sunriseTime + offset_in_getNext) {
+                if (following_next == 0 && current_Monthday >= next) {
+                    offset_Monthdays = days_mmax;
+                }
+
+                structnext_time.time = sunriseTime + offset_in_getNext + offset_next * 86400000 + offset_Monthdays * 86400000 + (period_in_getNext * 86400000 * (period_in_getNext * days_mmax));
+                structnext_time.day = tm.tm_mday + offset_next + (period_in_getNext * days_mmax) + offset_Monthdays;
+
+                if (structnext_time.day > days_mmax) {
+                    structnext_time.day = structnext_time.day - (days_mmax * period_in_getNext);
+                    structnext_time.month = month_in_getNext + period_in_getNext;
+
+                    if (structnext_time.day > GetDaysMaxThisMonth(structnext_time.month)){
+
+                        structnext_time.day = GetDaysMaxThisMonth(structnext_time.month);
+                        int diff = structnext_time.day - GetDaysMaxThisMonth(structnext_time.month);
+                        structnext_time.time = structnext_time.time - diff * 86400000;
+
+                    }
+
+                } else {
+                    structnext_time.month = month_in_getNext;
+                }
+
+                if (structnext_time.month >= 12) {
+                    structnext_time.month = structnext_time.month - 12;
+                    structnext_time.year = year_in_getNext + 1;
+                } else {
+                    structnext_time.year = year_in_getNext;
+                }
+
+                return structnext_time;
+            }
+            if (sunriseTime + offset_in_getNext > current_time) {
+
+                if (next == current_Monthday) {
+                    offset_next = 0;
+                }
+
+                structnext_time.time = sunriseTime + offset_in_getNext + (offset_Monthdays * 86400000) + (period_in_getNext * 86400000 * (period_in_getNext * days_mmax));
+                structnext_time.day = tm.tm_mday + period_in_getNext * days_mmax + offset_Monthdays;
+
+                if (structnext_time.day > days_mmax) {
+                    structnext_time.day = structnext_time.day - (days_mmax * period_in_getNext);
+                    structnext_time.month = month_in_getNext + period_in_getNext;
+
+                    if (structnext_time.day > GetDaysMaxThisMonth(structnext_time.month)){
+
+                        structnext_time.day = GetDaysMaxThisMonth(structnext_time.month);
+                        int diff = structnext_time.day - GetDaysMaxThisMonth(structnext_time.month);
+                        structnext_time.time = structnext_time.time - diff * 86400000;
+
+                    }
+                } else {
+                    structnext_time.month = month_in_getNext;
+                }
+
+                if (structnext_time.month >= 12) {
+                    structnext_time.month = structnext_time.month - 12;
+                    structnext_time.year = year_in_getNext + 1;
+                } else {
+                    structnext_time.year = year_in_getNext;
+                }
+
+                return structnext_time;
+            }
         }
         if (trigger_in_getNext == "sunset") {
 
-        }
-        if (trigger_in_getNext == "timepoint") {
+            if (current_time >= sunsetTime + offset_in_getNext) {
+                if (following_next == 0 && current_weekday >= next) {
+                    offset_Monthdays = days_mmax;
+                }
+
+                structnext_time.time = sunsetTime + offset_in_getNext + offset_next * 86400000 + offset_Monthdays * 86400000 + (period_in_getNext * 86400000 * (period_in_getNext * days_mmax));
+                structnext_time.day = tm.tm_mday + (period_in_getNext * days_mmax) + offset_Monthdays;
+
+                if (structnext_time.day > days_mmax) {
+                    structnext_time.day = structnext_time.day - (days_mmax * period_in_getNext);
+                    structnext_time.month = month_in_getNext + period_in_getNext;
+
+                    if (structnext_time.day > GetDaysMaxThisMonth(structnext_time.month)){
+
+                        structnext_time.day = GetDaysMaxThisMonth(structnext_time.month);
+                        int diff = structnext_time.day - GetDaysMaxThisMonth(structnext_time.month);
+                        structnext_time.time = structnext_time.time - diff * 86400000;
+
+                    }
+
+                } else {
+                    structnext_time.month = month_in_getNext;
+                }
+
+                if (structnext_time.month >= 12) {
+                    structnext_time.month = structnext_time.month - 12;
+                    structnext_time.year = year_in_getNext + 1;
+                } else {
+                    structnext_time.year = year_in_getNext;
+                }
+
+                return structnext_time;
+            }
+            if (sunsetTime + offset_in_getNext > current_time) {
+
+                if (next == current_Monthday) {
+                    offset_next = 0;
+                }
+
+                structnext_time.time = sunsetTime + offset_in_getNext + (offset_Monthdays * 86400000) + (period_in_getNext * 86400000 * days_mmax);
+                structnext_time.day = tm.tm_mday + period_in_getNext * days_mmax + offset_Monthdays + offset_next;
+
+                if (structnext_time.day > days_mmax) {
+                    structnext_time.day = structnext_time.day - (days_mmax * period_in_getNext);
+                    structnext_time.month = month_in_getNext + period_in_getNext;
+
+                    if (structnext_time.day > GetDaysMaxThisMonth(structnext_time.month)){
+
+                        structnext_time.day = GetDaysMaxThisMonth(structnext_time.month);
+                        int diff = structnext_time.day - GetDaysMaxThisMonth(structnext_time.month);
+                        structnext_time.time = structnext_time.time - diff * 86400000;
+
+                    }
+
+                } else {
+                    structnext_time.month = month_in_getNext;
+                }
+
+                if (structnext_time.month >= 12) {
+                    structnext_time.month = structnext_time.month - 12;
+                    structnext_time.year = year_in_getNext + 1;
+                } else {
+                    structnext_time.year = year_in_getNext;
+                }
+
+                return structnext_time;
+            }
 
         }
+        if (trigger_in_getNext == "timepoint") {
+            if (current_time >= day_start_in_getNext + timepoint_min_in_getNext) {
+
+                structnext_time.time = day_start_in_getNext + timepoint_min_in_getNext + offset_next * 86400000 + offset_Monthdays * 86400000 + (period_in_getNext * 86400000 * (period_in_getNext * days_mmax));
+                structnext_time.day = tm.tm_mday + offset_next + (period_in_getNext * days_mmax) + offset_Monthdays;
+
+                if (structnext_time.day > days_mmax) {
+                    structnext_time.day = structnext_time.day - days_mmax;
+                    structnext_time.month = month_in_getNext + 1;
+
+                    if (structnext_time.day > GetDaysMaxThisMonth(structnext_time.month)){
+
+                        structnext_time.day = GetDaysMaxThisMonth(structnext_time.month);
+                        int diff = structnext_time.day - GetDaysMaxThisMonth(structnext_time.month);
+                        structnext_time.time = structnext_time.time - diff * 86400000;
+
+                    }
+
+                } else {
+                    structnext_time.month = month_in_getNext;
+                }
+
+                if (structnext_time.month >= 12) {
+                    structnext_time.month = structnext_time.month - 12;
+                    structnext_time.year = year_in_getNext + 1;
+                } else {
+                    structnext_time.year = year_in_getNext;
+                }
+
+                return structnext_time;
+            }
+            if (day_start_in_getNext + timepoint_min_in_getNext > current_time) {
+                if (next == current_weekday) {
+                    offset_next = days_mmax;
+                }
+
+                structnext_time.time = day_start_in_getNext + timepoint_min_in_getNext + (offset_Monthdays * 86400000) + (period_in_getNext * 86400000 * days_mmax);
+                structnext_time.day = tm.tm_mday + period_in_getNext * days_mmax + offset_Monthdays;
+
+                if (structnext_time.day > days_mmax) {
+                    structnext_time.day = structnext_time.day - days_mmax;
+                    structnext_time.month = month_in_getNext + 1;
+
+                    if (structnext_time.day > GetDaysMaxThisMonth(structnext_time.month)){
+
+                        structnext_time.day = GetDaysMaxThisMonth(structnext_time.month);
+                        int diff = structnext_time.day - GetDaysMaxThisMonth(structnext_time.month);
+                        structnext_time.time = structnext_time.time - diff * 86400000;
+
+                    }
+
+                } else {
+                    structnext_time.month = month_in_getNext;
+                }
+
+                if (structnext_time.month >= 12) {
+                    structnext_time.month = structnext_time.month - 12;
+                    structnext_time.year = year_in_getNext + 1;
+                } else {
+                    structnext_time.year = year_in_getNext;
+                }
+
+                return structnext_time;
+            }
+
+        }
+
 
     }
 

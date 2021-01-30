@@ -72,7 +72,7 @@
             weekdays: {value: "0"},
             days: {value: "everyday"},
             daysnumber: {value: "0"},
-            month: {value: "0", validate:RED.validators.number()}
+            month: {value: "0"}
 
         },
         inputs:1,

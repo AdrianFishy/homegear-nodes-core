@@ -69,7 +69,7 @@ class MyNode : public Flows::INode {
   int64_t _period;
   std::string _days;
   std::string _daysNumber;
-  int64_t _months;
+  std::string _months;
   std::string _weekdays;
   int64_t _lastTime;
   std::mutex _timerMutex;
