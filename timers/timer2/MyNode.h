@@ -90,7 +90,7 @@ class MyNode : public Flows::INode {
   std::string stringFilter(const std::string &to, const std::string &remove);
   std::array<int64_t, 100> ConvertStrtoArr(std::string timepoint);
   std::vector<int> StringToIntVector(const std::string& str, const std::string& delim);
-  int GetDaysMax(int currentMonth);
+  int GetDaysMax();
   int GetDaysMaxThisMonth(int thisMonth);
 };
 
