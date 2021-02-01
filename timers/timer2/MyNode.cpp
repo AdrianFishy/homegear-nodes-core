@@ -758,9 +758,15 @@ MyNode::NextTime MyNode::getNext() {
                     structnext_time.month = current_Month + period_offset + period_in_getNext;
                 }
 
+                if (structnext_time.month > 12){
+                    structnext_time.month = structnext_time.month - 12;
+                    structnext_time.year = structnext_time.year + 1;
+                }else {
+                    structnext_time.year = year_in_getNext;
+                }
+
                 structnext_time.time = sunriseTime + offset_in_getNext;
                 structnext_time.day = next;
-                structnext_time.year = year_in_getNext;
                 return structnext_time;
             }
             if (sunriseTime + offset_in_getNext > current_time) {
@@ -774,7 +780,12 @@ MyNode::NextTime MyNode::getNext() {
                     structnext_time.month = current_Month + period_in_getNext;
                 }
 
-                structnext_time.year = year_in_getNext;
+                if (structnext_time.month > 12){
+                    structnext_time.month = structnext_time.month - 12;
+                    structnext_time.year = structnext_time.year + 1;
+                }else {
+                    structnext_time.year = year_in_getNext;
+                }
 
                 return structnext_time;
 
@@ -816,9 +827,15 @@ MyNode::NextTime MyNode::getNext() {
                     structnext_time.month = current_Month + period_offset + period_in_getNext;
                 }
 
+                if (structnext_time.month > 12){
+                    structnext_time.month = structnext_time.month - 12;
+                    structnext_time.year = structnext_time.year + 1;
+                }else {
+                    structnext_time.year = year_in_getNext;
+                }
+
                 structnext_time.time = sunsetTime + offset_in_getNext;
                 structnext_time.day = next;
-                structnext_time.year = year_in_getNext;
                 return structnext_time;
             }
             if (sunsetTime + offset_in_getNext > current_time) {
@@ -832,7 +849,13 @@ MyNode::NextTime MyNode::getNext() {
                     structnext_time.month = current_Month + period_in_getNext;
                 }
 
-                structnext_time.year = year_in_getNext;
+                if (structnext_time.month > 12){
+                    structnext_time.month = structnext_time.month - 12;
+                    structnext_time.year = structnext_time.year + 1;
+                }else {
+                    structnext_time.year = year_in_getNext;
+                }
+
 
                 return structnext_time;
             }
@@ -873,9 +896,15 @@ MyNode::NextTime MyNode::getNext() {
                     structnext_time.month = current_Month + period_offset + period_in_getNext;
                 }
 
+                if (structnext_time.month > 12){
+                    structnext_time.month = structnext_time.month - 12;
+                    structnext_time.year = structnext_time.year + 1;
+                }else {
+                    structnext_time.year = year_in_getNext;
+                }
+
                 structnext_time.time = day_start_in_getNext + timepoint_min_in_getNext;
                 structnext_time.day = next;
-                structnext_time.year = year_in_getNext;
                 return structnext_time;
             }
             if (day_start_in_getNext + timepoint_min_in_getNext > current_time) {
@@ -889,8 +918,12 @@ MyNode::NextTime MyNode::getNext() {
                     structnext_time.month = current_Month + period_in_getNext;
                 }
 
-                structnext_time.year = year_in_getNext;
-
+                if (structnext_time.month > 12){
+                    structnext_time.month = structnext_time.month - 12;
+                    structnext_time.year = structnext_time.year + 1;
+                }else {
+                    structnext_time.year = year_in_getNext;
+                }
                 return structnext_time;
             }
 
