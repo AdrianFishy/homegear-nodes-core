@@ -92,6 +92,9 @@ class MyNode : public Flows::INode {
   std::vector<int> StringToIntVector(const std::string& str, const std::string& delim);
   int GetDaysMax();
   int GetDaysMaxThisMonth(int thisMonth);
+  int SearchForHigherOrEqualNumber(std::vector<int> vectors, int vector_max, int number, int valueForNoResult);
+  int SearchForSmallerNumber(std::vector<int> vectors, int vector_max, int number);
+  int SearchForHigherNumber(std::vector<int> vectors, int vector_max, int number);
 };
 
 }
