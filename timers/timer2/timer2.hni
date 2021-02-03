@@ -32,7 +32,7 @@
         <label  style="width: 130px" for="node-input-timepoint"><i class="fa fa-clock-o"></i> <span data-i18n="timer2.label.timepoint"></span> (Min.)</label>
         <input  style="width: 65%" type="text" id="node-input-timepoint" placeholder="0">
     </div>
-    <div class="form-row id="node-input-period-container">
+    <div class="form-row hide" id="node-input-period-container">
         <label  style="width: 130px" for="node-input-period"><i class="fa fa-clock-o"></i> <span data-i18n="timer2.label.period"></span></label>
         <input  style="width: 65%" type="text" id="node-input-period" placeholder="1">
     </div>
@@ -48,9 +48,9 @@
         <label  style="width: 130px" for="node-input-daysnumber"><i class="fa fa-clock-o"></i> <span data-i18n="timer2.label.days"></span></label>
         <input  style="width: 65%" type="text" id="node-input-daysnumber" placeholder="0">
     </div>
-    <div class="form-row hide" id="node-input-month-container">
-        <label  style="width: 130px" for="node-input-month"><i class="fa fa-clock-o"></i> <span data-i18n="timer2.label.month"></span></label>
-        <input  style="width: 65%" type="text" id="node-input-month" placeholder="0">
+    <div class="form-row hide" id="node-input-months-container">
+        <label  style="width: 130px" for="node-input-months"><i class="fa fa-clock-o"></i> <span data-i18n="timer2.label.months"></span></label>
+        <input  style="width: 65%" type="text" id="node-input-months" placeholder="0">
     </div>
 
 </script>
@@ -72,7 +72,7 @@
             weekdays: {value: "0"},
             days: {value: "everyday"},
             daysnumber: {value: "0"},
-            month: {value: "0"}
+            months: {value: "0"}
 
         },
         inputs:1,
@@ -148,33 +148,49 @@
                     $("#node-input-days-container").show();
                     $("#node-input-daysnumber-container").hide();
                     $("#node-input-weekdays-container").hide();
-                    $("#node-input-month-container").hide();
+                    $("#node-input-months-container").hide();
 
                 } else if(typeselect === "weekly") {
                     $("#node-input-days-container").hide();
                     $("#node-input-daysnumber-container").hide();
                     $("#node-input-weekdays-container").show();
-                    $("#node-input-month-container").hide();
+                    $("#node-input-months-container").hide();
 
                 } else if(typeselect === "monthly") {
                     $("#node-input-days-container").hide();
                     $("#node-input-daysnumber-container").show();
                     $("#node-input-weekdays-container").hide();
-                    $("#node-input-month-container").hide();
+                    $("#node-input-months-container").hide();
 
                 } else if(typeselect === "yearly") {
                     $("#node-input-days-container").hide();
                     $("#node-input-daysnumber-container").show();
                     $("#node-input-weekdays-container").hide();
-                    $("#node-input-month-container").show();
+                    $("#node-input-months-container").show();
                 }
             }
 
+            function updateTypeDays () {
+                var typeselect = $("#node-input-days").val();
+
+                if (typeselect === "everyday"){
+                    $("#node-input-period-container").show();
+                }
+                if (typeselect === "workday"){
+                    $("#node-input-period-container").hide();
+                }
+                if (typeselect === "weekend"){
+                    $("#node-input-period-container").hide();
+                }
+
+            }
+
             updateType();
+            updateTypeDays ();
             updateOffsetTimepoint();
             $("#node-input-typeSelect").change(function (){updateType()});
             $("#node-input-trigger").change(function (){updateOffsetTimepoint()});
-
+            $("#node-input-days").change(function (){updateTypeDays()});
 
 
         }

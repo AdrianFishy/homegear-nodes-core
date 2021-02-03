@@ -77,7 +77,7 @@ class MyNode : public Flows::INode {
   std::atomic_bool _stopped{true};
   std::atomic_bool _forceUpdate{false};
   std::thread _timerThread;
-  bool period_check;
+
 
   std::vector<std::string> splitAll(std::string string, char delimiter);
   void timer();

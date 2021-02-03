@@ -212,7 +212,7 @@
       "workday": "Arbeitstage",
       "weekend": "Wochenende",
       "weekdays": "Wochentage",
-      "month": "Monat",
+      "months": "Monate",
       "true-only": "Nur bei \"true\" togglen",
       "use-feedback": "Rückmeldeeingang verwenden",
       "variabletype": "Variablentyp",
