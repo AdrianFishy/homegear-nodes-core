@@ -29,29 +29,95 @@
         <input  style="width: 65%" type="text" id="node-input-startoff" placeholder="0">
     </div>
     <div class="form-row hide" id="node-input-timepoint-container">
-        <label  style="width: 130px" for="node-input-timepoint"><i class="fa fa-clock-o"></i> <span data-i18n="timer2.label.timepoint"></span> (Min.)</label>
-        <input  style="width: 65%" type="text" id="node-input-timepoint" placeholder="0">
+        <label  style="width: 130px" for="node-input-timepoint"><i class="fa fa-clock-o"></i> <span data-i18n="timer2.label.timepoint"></span></label>
+        <input  style="width: 65%" type="text" id="node-input-timepoint" placeholder="hh:mm">
     </div>
     <div class="form-row hide" id="node-input-period-container">
         <label  style="width: 130px" for="node-input-period"><i class="fa fa-clock-o"></i> <span data-i18n="timer2.label.period"></span></label>
         <input  style="width: 65%" type="text" id="node-input-period" placeholder="1">
     </div>
-    <div class="form-row hide" id="node-input-days-container">
+    <div class="form-row hide" id="node-input-daysdaily-container">
         <label style="width: 130px;" for="node-input-days"><i class="fa fa-random"></i> <span data-i18n="timer2.label.days"></span></label>
         <select type="text" id="node-input-days" class="node-input-select2-nosearch" style="display: inline-block; width: 65%;"></select>
     </div>
     <div class="form-row hide" id="node-input-weekdays-container">
         <label  style="width: 130px" for="node-input-weekdays"><i class="fa fa-clock-o"></i> <span data-i18n="timer2.label.weekdays"></span></label>
-        <input  style="width: 65%" type="text" id="node-input-weekdays" placeholder="0">
+        <div class="form-row">
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-mon"><span data-i18n="timer2.label.monday"></span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-tue"><span data-i18n="timer2.label.tuesday"></span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-wed"><span data-i18n="timer2.label.wednesday"></span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-thu"><span data-i18n="timer2.label.thursday"></span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-fri"><span data-i18n="timer2.label.friday"></span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-sat"><span data-i18n="timer2.label.saturday"></span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-sun"><span data-i18n="timer2.label.sunday"></span></span>
+        </div>
     </div>
     <div class="form-row hide" id="node-input-daysnumber-container">
         <label  style="width: 130px" for="node-input-daysnumber"><i class="fa fa-clock-o"></i> <span data-i18n="timer2.label.days"></span></label>
-        <input  style="width: 65%" type="text" id="node-input-daysnumber" placeholder="0">
+        <div class="form-row">
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-1"><span>1</span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-2"><span>2</span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-3"><span>3</span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-4"><span>4</span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-5"><span>5</span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-6"><span>6</span></span>
+        </div>
+        <div class="form-row">
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-7"><span>7</span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-8"><span>8</span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-9"><span>9</span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-10"><span>10</span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-11"><span>11</span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-12"><span>12</span></span>
+        </div>
+        <div class="form-row">
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-13"><span>13</span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-14"><span>14</span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-15"><span>15</span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-16"><span>16</span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-17"><span>17</span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-18"><span>18</span></span>
+        </div>
+        <div class="form-row">
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-19"><span>19</span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-20"><span>20</span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-21"><span>21</span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-22"><span>22</span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-23"><span>23</span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-24"><span>24</span></span>
+        </div>
+        <div class="form-row">
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-25"><span>25</span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-26"><span>26</span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-27"><span>27</span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-28"><span>28</span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-29"><span>29</span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-30"><span>30</span></span>
+        </div>
+        <div class="form-row">
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-31"><span>31</span></span>
+        </div>
     </div>
     <div class="form-row hide" id="node-input-months-container">
         <label  style="width: 130px" for="node-input-months"><i class="fa fa-clock-o"></i> <span data-i18n="timer2.label.months"></span></label>
-        <input  style="width: 65%" type="text" id="node-input-months" placeholder="0">
+        <div class="form-row">
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-jan"><span data-i18n="timer2.label.january"></span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-feb"><span data-i18n="timer2.label.february"></span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-mar"><span data-i18n="timer2.label.march"></span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-apr"><span data-i18n="timer2.label.april"></span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-may"><span data-i18n="timer2.label.may"></span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-jun"><span data-i18n="timer2.label.june"></span></span>
+        </div>
+        <div class="form-row">
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-jul"><span data-i18n="timer2.label.july"></span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-aug"><span data-i18n="timer2.label.august"></span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-sep"><span data-i18n="timer2.label.september"></span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-oct"><span data-i18n="timer2.label.october"></span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-nov"><span data-i18n="timer2.label.november"></span></span>
+            <span style="width: 50px; float: left; margin-left: 5px;"><input style="width:auto;" type="checkbox" id="node-input-dec"><span data-i18n="timer2.label.december"></span></span>
+        </div>
     </div>
+
 
 </script>
 <script type="text/javascript">
@@ -69,11 +135,57 @@
             startoff: {value:"0", validate:RED.validators.number() },
             timepoint: {value: "0", validate:RED.validators.number()},
             period: {value: "1", validate:RED.validators.number(), required: true},
-            weekdays: {value: "0"},
-            days: {value: "everyday"},
-            daysnumber: {value: "0"},
-            months: {value: "0"}
-
+            daysdaily: {value: "everyday"},
+            sun: {value:true},
+            mon: {value:true},
+            tue: {value:true},
+            wed: {value:true},
+            thu: {value:true},
+            fri: {value:true},
+            sat: {value:true},
+            jan: {value:true},
+            feb: {value:true},
+            mar: {value:true},
+            apr: {value:true},
+            may: {value:true},
+            jun: {value:true},
+            jul: {value:true},
+            aug: {value:true},
+            sep: {value:true},
+            oct: {value:true},
+            nov: {value:true},
+            dec: {value:true},
+            1: {value:true},
+            2: {value:true},
+            3: {value:true},
+            4: {value:true},
+            5: {value:true},
+            6: {value:true},
+            7: {value:true},
+            8: {value:true},
+            9: {value:true},
+            10: {value:true},
+            11: {value:true},
+            12: {value:true},
+            13: {value:true},
+            14: {value:true},
+            15: {value:true},
+            16: {value:true},
+            17: {value:true},
+            18: {value:true},
+            19: {value:true},
+            20: {value:true},
+            21: {value:true},
+            22: {value:true},
+            23: {value:true},
+            24: {value:true},
+            25: {value:true},
+            26: {value:true},
+            27: {value:true},
+            28: {value:true},
+            29: {value:true},
+            30: {value:true},
+            31: {value:true},
         },
         inputs:1,
         inputInfo: [
@@ -191,6 +303,7 @@
             $("#node-input-typeSelect").change(function (){updateType()});
             $("#node-input-trigger").change(function (){updateOffsetTimepoint()});
             $("#node-input-days").change(function (){updateTypeDays()});
+
 
 
         }

@@ -67,31 +67,27 @@ class MyNode : public Flows::INode {
   int64_t _onOffset;
   int64_t _timepoint;
   int64_t _period;
-  std::string _days;
-  std::string _daysNumber;
-  std::string _months;
-  std::string _weekdays;
+  std::string _daysdaily;
   int64_t _lastTime;
   std::mutex _timerMutex;
   std::atomic_bool _stopThread{true};
   std::atomic_bool _stopped{true};
   std::atomic_bool _forceUpdate{false};
   std::thread _timerThread;
+  std::vector<bool> _weekdays;
+  std::vector<bool> _months;
+  std::vector<bool> _days;
 
 
   std::vector<std::string> splitAll(std::string string, char delimiter);
   void timer();
-  std::string getDateString(int64_t time);
   int64_t getSunTime(int64_t timeStamp, const std::string& time);
   int64_t getTime(int64_t currentTime, const std::string& time, const std::string& timeType, int64_t offset);
   void input(const Flows::PNodeInfo &info, uint32_t index, const Flows::PVariable &message) override;
   NextTime getNext();
   void printNext(NextTime next);
-  std::string stringFilter(const std::string &to, const std::string &remove);
-  std::array<int64_t, 100> ConvertStrtoArr(std::string timepoint);
-  std::vector<int> StringToIntVector(const std::string& str, const std::string& delim);
+  std::vector<int> BoolVectorToIntVector(std::vector<bool> boolVal);
   int GetDaysMax();
-  int GetDaysMaxThisMonth(int thisMonth);
   int SearchForHigherOrEqualNumber(std::vector<int> vectors, int vector_max, int number, int valueForNoResult);
   int SearchForSmallerNumber(std::vector<int> vectors, int vector_max, int number);
   int SearchForHigherNumber(std::vector<int> vectors, int vector_max, int number);

@@ -45,6 +45,7 @@ bool MyNode::init(const Flows::PNodeInfo &info) {
     try {
 
         auto settingsIterator = info->info->structValue->find("startup");
+        _out->printError(info->info->print());
 
         if (settingsIterator != info->info->structValue->end())
             _outputOnStartUp = settingsIterator->second->booleanValue;
@@ -77,21 +78,161 @@ bool MyNode::init(const Flows::PNodeInfo &info) {
         if (settingsIterator != info->info->structValue->end())
             _period = Flows::Math::getNumber(settingsIterator->second->stringValue);
 
-        settingsIterator = info->info->structValue->find("days");
+        settingsIterator = info->info->structValue->find("daysdaily");
         if (settingsIterator != info->info->structValue->end())
-            _days = settingsIterator->second->stringValue;
+            _daysdaily = settingsIterator->second->stringValue;
 
-        settingsIterator = info->info->structValue->find("weekdays");
-        if (settingsIterator != info->info->structValue->end())
-            _weekdays = settingsIterator->second->stringValue;
+        _weekdays.reserve(7);
+        _months.reserve(12);
+        _days.reserve(31);
+        _weekdays.resize(7, true);
+        _months.resize(12, true);
+        _days.resize(31, true);
 
-        settingsIterator = info->info->structValue->find("daysnumber");
-        if (settingsIterator != info->info->structValue->end())
-            _daysNumber = settingsIterator->second->stringValue;
+        settingsIterator = info->info->structValue->find("mon");
+        if (settingsIterator != info->info->structValue->end()) _weekdays.at(0) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("tue");
+        if (settingsIterator != info->info->structValue->end()) _weekdays.at(1) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("wed");
+        if (settingsIterator != info->info->structValue->end()) _weekdays.at(2) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("thu");
+        if (settingsIterator != info->info->structValue->end()) _weekdays.at(3) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("fri");
+        if (settingsIterator != info->info->structValue->end()) _weekdays.at(4) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("sat");
+        if (settingsIterator != info->info->structValue->end()) _weekdays.at(5) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("sun");
+        if (settingsIterator != info->info->structValue->end()) _weekdays.at(6) = settingsIterator->second->booleanValue;
 
-        settingsIterator = info->info->structValue->find("months");
-        if (settingsIterator != info->info->structValue->end())
-            _months = settingsIterator->second->stringValue;
+        bool reactivate = true;
+        for (auto day : _weekdays) {
+            if (day) {
+                reactivate = false;
+                break;
+            }
+        }
+        if (reactivate) {
+            _out->printWarning("Warning: No weekday selected.");
+            for (auto day : _weekdays) {
+                day = true;
+            }
+        }
+
+        settingsIterator = info->info->structValue->find("jan");
+        if (settingsIterator != info->info->structValue->end()) _months.at(0) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("feb");
+        if (settingsIterator != info->info->structValue->end()) _months.at(1) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("mar");
+        if (settingsIterator != info->info->structValue->end()) _months.at(2) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("apr");
+        if (settingsIterator != info->info->structValue->end()) _months.at(3) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("may");
+        if (settingsIterator != info->info->structValue->end()) _months.at(4) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("jun");
+        if (settingsIterator != info->info->structValue->end()) _months.at(5) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("jul");
+        if (settingsIterator != info->info->structValue->end()) _months.at(6) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("aug");
+        if (settingsIterator != info->info->structValue->end()) _months.at(7) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("sep");
+        if (settingsIterator != info->info->structValue->end()) _months.at(8) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("oct");
+        if (settingsIterator != info->info->structValue->end()) _months.at(9) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("nov");
+        if (settingsIterator != info->info->structValue->end()) _months.at(10) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("dec");
+        if (settingsIterator != info->info->structValue->end()) _months.at(11) = settingsIterator->second->booleanValue;
+
+        reactivate = true;
+        for (auto month : _months) {
+            if (month) {
+                reactivate = false;
+                break;
+            }
+        }
+        if (reactivate) {
+            _out->printWarning("Warning: No month selected.");
+            for (auto month : _months) {
+                month = true;
+            }
+        }
+
+        settingsIterator = info->info->structValue->find("1");
+        if (settingsIterator != info->info->structValue->end()) _days.at(0) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("2");
+        if (settingsIterator != info->info->structValue->end()) _days.at(1) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("3");
+        if (settingsIterator != info->info->structValue->end()) _days.at(2) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("4");
+        if (settingsIterator != info->info->structValue->end()) _days.at(3) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("5");
+        if (settingsIterator != info->info->structValue->end()) _days.at(4) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("6");
+        if (settingsIterator != info->info->structValue->end()) _days.at(5) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("7");
+        if (settingsIterator != info->info->structValue->end()) _days.at(6) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("8");
+        if (settingsIterator != info->info->structValue->end()) _days.at(7) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("9");
+        if (settingsIterator != info->info->structValue->end()) _days.at(8) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("10");
+        if (settingsIterator != info->info->structValue->end()) _days.at(9) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("11");
+        if (settingsIterator != info->info->structValue->end()) _days.at(10) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("12");
+        if (settingsIterator != info->info->structValue->end()) _days.at(11) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("13");
+        if (settingsIterator != info->info->structValue->end()) _days.at(12) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("14");
+        if (settingsIterator != info->info->structValue->end()) _days.at(13) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("15");
+        if (settingsIterator != info->info->structValue->end()) _days.at(14) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("16");
+        if (settingsIterator != info->info->structValue->end()) _days.at(15) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("17");
+        if (settingsIterator != info->info->structValue->end()) _days.at(16) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("18");
+        if (settingsIterator != info->info->structValue->end()) _days.at(17) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("19");
+        if (settingsIterator != info->info->structValue->end()) _days.at(18) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("20");
+        if (settingsIterator != info->info->structValue->end()) _days.at(19) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("21");
+        if (settingsIterator != info->info->structValue->end()) _days.at(20) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("22");
+        if (settingsIterator != info->info->structValue->end()) _days.at(21) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("23");
+        if (settingsIterator != info->info->structValue->end()) _days.at(22) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("24");
+        if (settingsIterator != info->info->structValue->end()) _days.at(23) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("25");
+        if (settingsIterator != info->info->structValue->end()) _days.at(24) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("26");
+        if (settingsIterator != info->info->structValue->end()) _days.at(25) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("27");
+        if (settingsIterator != info->info->structValue->end()) _days.at(26) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("28");
+        if (settingsIterator != info->info->structValue->end()) _days.at(27) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("29");
+        if (settingsIterator != info->info->structValue->end()) _days.at(28) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("30");
+        if (settingsIterator != info->info->structValue->end()) _days.at(29) = settingsIterator->second->booleanValue;
+        settingsIterator = info->info->structValue->find("31");
+        if (settingsIterator != info->info->structValue->end()) _days.at(30) = settingsIterator->second->booleanValue;
+
+        reactivate = true;
+        for (auto day : _days) {
+            if (day) {
+                reactivate = false;
+                break;
+            }
+        }
+        if (reactivate) {
+            _out->printWarning("Warning: No day selected.");
+            for (auto day : _days) {
+                day = true;
+            }
+        }
 
         return true;
     }
@@ -225,38 +366,13 @@ int64_t MyNode::getTime(int64_t currentTime, const std::string &time, const std:
     return 0;
 }
 
-std::array<int64_t, 100> MyNode::ConvertStrtoArr(std::string timepoint) {
-    if (timepoint.length() > 0) {
-
-        int64_t j = 0, i;
-        std::array<int64_t, 100> arr = {0};
-        for (i = 0; timepoint[i] != '\0'; i++) {
-
-            if (timepoint[i] == ' ')
-                continue;
-            if (timepoint[i] == ',') {
-                j++;
-            } else {
-                arr[j] = arr[j] * 10 + (timepoint[i] - 48);
-            }
-        }
-
-        return arr;
-
-    }
-}
-
 MyNode::NextTime MyNode::getNext() {
     struct NextTime structnext_time;
     std::string type_in_getNext = _type;
     std::string trigger_in_getNext = _trigger;
     int64_t offset_in_getNext = _onOffset * 1000 * 60;
     int64_t period_in_getNext = _period;
-    std::string days_in_getNext = _days;
-    std::string days_number_in_getNext = _daysNumber;
-    std::string months_in_getNext = _months;
-    std::string weekdays_in_getNext = _weekdays;
-
+    std::string daysdaily_in_get_next = _daysdaily;
     int64_t current_time = _sunTime.getLocalTime();
     int64_t inputTime = current_time - 86400000;
     int64_t sunriseTime = getSunTime(current_time, "sunrise");
@@ -289,14 +405,14 @@ MyNode::NextTime MyNode::getNext() {
 
     if (type_in_getNext == "daily") {
 
-        if (days_in_getNext == "weekend") {
+        if (daysdaily_in_get_next == "weekend") {
             if (tm.tm_wday < 6) {
                 weekday_offset = 6 - tm.tm_wday;
                 period_in_getNext = 0;
             }
 
         }
-        if (days_in_getNext == "workday") {
+        if (daysdaily_in_get_next == "workday") {
             if (tm.tm_wday >= 5) {
                 weekday_offset = (tm.tm_wday - 8) * (-1);
                 period_in_getNext = 0;
@@ -308,7 +424,7 @@ MyNode::NextTime MyNode::getNext() {
             }
         }
 
-        if (days_in_getNext == "everyday") {
+        if (daysdaily_in_get_next == "everyday") {
             if (current_time >= sunriseTime + offset_in_getNext) {
                 nextday = 1;
             } else {
@@ -319,7 +435,7 @@ MyNode::NextTime MyNode::getNext() {
         if (trigger_in_getNext == "sunrise") {
             if (current_time >= sunriseTime + offset_in_getNext) {
 
-                if (days_in_getNext == "everyday") {
+                if (daysdaily_in_get_next == "everyday") {
                     if (current_time >= sunriseTime + offset_in_getNext) {
                         nextday = 1;
                     } else {
@@ -371,7 +487,7 @@ MyNode::NextTime MyNode::getNext() {
         if (trigger_in_getNext == "sunset") {
             if (current_time >= sunsetTime + offset_in_getNext) {
 
-                if (days_in_getNext == "everyday") {
+                if (daysdaily_in_get_next == "everyday") {
                     if (current_time >= sunsetTime + offset_in_getNext) {
                         nextday = 1;
                     } else {
@@ -423,7 +539,7 @@ MyNode::NextTime MyNode::getNext() {
         if (trigger_in_getNext == "timepoint") {
             if (current_time >= day_start_in_getNext + timepoint_min_in_getNext) {
 
-                if (days_in_getNext == "everyday") {
+                if (daysdaily_in_get_next == "everyday") {
                     if (current_time >= day_start_in_getNext + timepoint_min_in_getNext) {
                         nextday = 1;
                     } else {
@@ -498,7 +614,7 @@ MyNode::NextTime MyNode::getNext() {
             period_weekdays = 0;
         }
 
-        std::vector<int> intVectorWeekdays = StringToIntVector(weekdays_in_getNext, ",");
+        std::vector<int32_t> intVectorWeekdays = BoolVectorToIntVector(_weekdays);
         for (int intVectorWeekday : intVectorWeekdays) {
             if (intVectorWeekday > 0 && intVectorWeekday <= max_weekdays) {
                 if (intVectorWeekday >= current_Weekday) {
@@ -759,7 +875,7 @@ MyNode::NextTime MyNode::getNext() {
         } else {
             period_monthdays = 0;
         }
-        std::vector<int> intVectorWeekdays = StringToIntVector(days_number_in_getNext, ",");
+        std::vector<int32_t> intVectorWeekdays = BoolVectorToIntVector(_days);
 
         for (int intVectorWeekday : intVectorWeekdays) {
             if (intVectorWeekday > 0 && intVectorWeekday <= days_mmax) {
@@ -1007,8 +1123,8 @@ MyNode::NextTime MyNode::getNext() {
         } else {
             period_monthdays = 0;
         }
-        std::vector<int> intVectorWeekdays = StringToIntVector(days_number_in_getNext, ",");
-        std::vector<int> intVectorMonths = StringToIntVector(months_in_getNext, ",");
+        std::vector<int> intVectorMonthdays = BoolVectorToIntVector(_days);
+        std::vector<int> intVectorMonths = BoolVectorToIntVector(_months);
 
         for (int intVectorMonth : intVectorMonths) {
             if (intVectorMonth > 0 && intVectorMonth <= max_months) {
@@ -1030,7 +1146,7 @@ MyNode::NextTime MyNode::getNext() {
             }
         }
 
-        for (int intVectorWeekday : intVectorWeekdays) {
+        for (int intVectorWeekday : intVectorMonthdays) {
             if (intVectorWeekday > 0 && intVectorWeekday <= days_mmax) {
                 if (intVectorWeekday >= current_Monthday && next_month) {
                     next_day = intVectorWeekday;
@@ -1040,7 +1156,7 @@ MyNode::NextTime MyNode::getNext() {
         }
 
         if (next_day == 0 || next_month != current_Month) {
-            for (int intVectorWeekday : intVectorWeekdays) {
+            for (int intVectorWeekday : intVectorMonthdays) {
                 if (intVectorWeekday > 0 && intVectorWeekday <= days_mmax) {
                     if (intVectorWeekday < current_Monthday) {
                         next_day = intVectorWeekday;
@@ -1054,7 +1170,7 @@ MyNode::NextTime MyNode::getNext() {
             if (current_time >= sunriseTime + offset_in_getNext) {
 
                 if (next_day == current_Monthday) {
-                    for (int intVectorWeekday : intVectorWeekdays) {
+                    for (int intVectorWeekday : intVectorMonthdays) {
                         if (intVectorWeekday > 0 && intVectorWeekday <= days_mmax) {
                             if (intVectorWeekday > next_day) {
                                 next_day = intVectorWeekday;
@@ -1065,7 +1181,7 @@ MyNode::NextTime MyNode::getNext() {
                 }
 
                 if (next_day == current_Monthday) {
-                    for (int intVectorWeekday : intVectorWeekdays) {
+                    for (int intVectorWeekday : intVectorMonthdays) {
                         if (intVectorWeekday > 0 && intVectorWeekday <= days_mmax) {
                             if (intVectorWeekday < next_day) {
                                 next_day = intVectorWeekday;
@@ -1117,7 +1233,7 @@ MyNode::NextTime MyNode::getNext() {
                     structnext_time.year = structnext_time.year + period_offset;
                 }
 
-                if (intVectorWeekdays.at(intVectorWeekdays.size() - 1) == current_Monthday) {
+                if (intVectorMonthdays.at(intVectorMonthdays.size() - 1) == current_Monthday) {
                     structnext_time.year = year_in_getNext + period_monthdays + period_offset;
                 }
 
@@ -1167,7 +1283,7 @@ MyNode::NextTime MyNode::getNext() {
             if (current_time >= sunsetTime + offset_in_getNext) {
 
                 if (next_day == current_Monthday) {
-                    for (int intVectorWeekday : intVectorWeekdays) {
+                    for (int intVectorWeekday : intVectorMonthdays) {
                         if (intVectorWeekday > 0 && intVectorWeekday <= days_mmax) {
                             if (intVectorWeekday > next_day) {
                                 next_day = intVectorWeekday;
@@ -1178,7 +1294,7 @@ MyNode::NextTime MyNode::getNext() {
                 }
 
                 if (next_day == current_Monthday) {
-                    for (int intVectorWeekday : intVectorWeekdays) {
+                    for (int intVectorWeekday : intVectorMonthdays) {
                         if (intVectorWeekday > 0 && intVectorWeekday <= days_mmax) {
                             if (intVectorWeekday < next_day) {
                                 next_day = intVectorWeekday;
@@ -1224,7 +1340,7 @@ MyNode::NextTime MyNode::getNext() {
                     structnext_time.month = next_month;
                 }
 
-                if (intVectorWeekdays.at(intVectorWeekdays.size() - 1) == current_Monthday) {
+                if (intVectorMonthdays.at(intVectorMonthdays.size() - 1) == current_Monthday) {
                     structnext_time.year = year_in_getNext + period_monthdays + period_offset;
                 }
 
@@ -1274,7 +1390,7 @@ MyNode::NextTime MyNode::getNext() {
             if (current_time >= day_start_in_getNext + timepoint_min_in_getNext) {
 
                 if (next_day == current_Monthday) {
-                    for (int intVectorWeekday : intVectorWeekdays) {
+                    for (int intVectorWeekday : intVectorMonthdays) {
                         if (intVectorWeekday > 0 && intVectorWeekday <= days_mmax) {
                             if (intVectorWeekday > next_day) {
                                 next_day = intVectorWeekday;
@@ -1285,7 +1401,7 @@ MyNode::NextTime MyNode::getNext() {
                 }
 
                 if (next_day == current_Monthday) {
-                    for (int intVectorWeekday : intVectorWeekdays) {
+                    for (int intVectorWeekday : intVectorMonthdays) {
                         if (intVectorWeekday > 0 && intVectorWeekday <= days_mmax) {
                             if (intVectorWeekday < next_day) {
                                 next_day = intVectorWeekday;
@@ -1331,7 +1447,7 @@ MyNode::NextTime MyNode::getNext() {
                     structnext_time.month = next_month;
                 }
 
-                if (intVectorWeekdays.at(intVectorWeekdays.size() - 1) == current_Monthday) {
+                if (intVectorMonthdays.at(intVectorMonthdays.size() - 1) == current_Monthday) {
                     structnext_time.year = year_in_getNext + period_monthdays + period_offset;
                 }
 
@@ -1452,80 +1568,28 @@ int MyNode::GetDaysMax() {
     return days_mmax;
 }
 
-int MyNode::GetDaysMaxThisMonth(int thisMonth) {
-    std::tm tm{};
-    _sunTime.getTimeStruct(tm);
-    int month = thisMonth;
-    int year = (tm.tm_year - 100) + 2000;
-    bool gap_year;
-    int days_mmax = 0;
+std::vector<int32_t> MyNode::BoolVectorToIntVector(std::vector<bool> boolVal) {
+    std::vector<int32_t> intNumbers;
+    intNumbers.resize(boolVal.size() + 1);
+    int j = 1;
+    int c = 1;
 
-    if ((year % 100 != 0 && year % 4 == 0) || year % 400 == 0) {
-        gap_year = true;
-    } else {
-        gap_year = false;
-    }
-    if ((month % 2) == 1) {
-        days_mmax = 31;
-    } else {
-        days_mmax = 30;
-        if (gap_year && month == 2) {
-            days_mmax = 29;
-        }
-        if (!gap_year && month == 2) {
-            days_mmax = 28;
+    for(int i = 0; i < boolVal.size(); i++){
+        if (boolVal.at(i)){
+            c++;
         }
     }
-    return days_mmax;
 
-}
-
-std::string MyNode::getDateString(int64_t time) {
-    const char timeFormat[] = "%x";
-    std::time_t t = 0;
-    if (time > 0) {
-        t = std::time_t(time / 1000);
-    } else {
-        const auto timePoint = std::chrono::system_clock::now();
-        t = std::chrono::system_clock::to_time_t(timePoint);
+    for(int i = 0; i < boolVal.size(); i++){
+        if (boolVal.at(i)){
+            intNumbers.at(j) = i + 1;
+            j++;
+        }
     }
-    char timeString[50];
-    std::tm localTime{};
-    localtime_r(&t, &localTime);
-    strftime(&timeString[0], 50, &timeFormat[0], &localTime);
-    std::ostringstream timeStream;
-    timeStream << timeString;
-    return timeStream.str();
-}
-
-std::vector<int> MyNode::StringToIntVector(const std::string &str, const std::string &delim) {
-    std::vector<std::string> tokens;
-    std::vector<int> intNumbers;
-    size_t prev = 0, pos = 0;
-    do {
-        pos = str.find(delim, prev);
-        if (pos == std::string::npos) pos = str.length();
-        std::string token = str.substr(prev, pos - prev);
-        if (!token.empty()) tokens.push_back(token);
-        prev = pos + delim.length();
-    } while (pos < str.length() && prev < str.length());
-
-    for (int i = 0; i < tokens.size(); i++) {
-        int num = atoi(tokens.at(i).c_str());
-        intNumbers.push_back(num);
-    }
+    intNumbers.resize(c);
     return intNumbers;
 }
 
-std::string MyNode::stringFilter(const std::string &to, const std::string &remove) {
-    std::string final;
-    for (std::string::const_iterator it = to.begin(); it != to.end(); ++it) {
-        if (remove.find(*it) == std::string::npos) {
-            final += *it;
-        }
-    }
-    return final;
-}
 
 void MyNode::printNext(NextTime next) {
 
