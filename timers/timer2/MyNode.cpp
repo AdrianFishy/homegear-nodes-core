@@ -370,7 +370,6 @@ int64_t MyNode::getTime(int64_t currentTime, const std::string &time, const std:
 MyNode::NextTime MyNode::getNext() {
     struct NextTime struct_Next_Time;
     std::string type = _type;
-    std::string trigger = _trigger;
     int64_t offset = _onOffset * 1000 * 60;
     int64_t period = _period;
     std::string daysdaily = _daysdaily;
@@ -389,9 +388,15 @@ MyNode::NextTime MyNode::getNext() {
     bool gap_year;
     int days_mmax = 0;
     enum trigger {sunrise, sunset, timepoint};
-    enum trigger trigger_type = sunrise;
+    enum trigger trigger_type;
 
-    _out->printError(std::to_string(trigger_type));
+    if (_trigger == "sunrise"){
+        trigger_type = sunrise;
+    }else if (_trigger == "sunset"){
+        trigger_type = sunset;
+    }else{
+        trigger_type = timepoint;
+    }
 
     std::vector<int32_t> timepoint_vector = SplitStringToIntVector(_timepoint);
     timepoint_min = (timepoint_vector.at(0) * 3600 + timepoint_vector.at(1) * 60 ) * 1000;
@@ -440,7 +445,7 @@ MyNode::NextTime MyNode::getNext() {
             }
         }
 
-        if (trigger == "sunrise") {
+        if (trigger_type == 0) {
             if (current_time >= sunrise_time + offset) {
 
                 if (daysdaily == "everyday") {
@@ -492,7 +497,7 @@ MyNode::NextTime MyNode::getNext() {
             }
         }
 
-        if (trigger == "sunset") {
+        if (trigger_type == 1) {
             if (current_time >= sunset_time + offset) {
 
                 if (daysdaily == "everyday") {
@@ -544,7 +549,7 @@ MyNode::NextTime MyNode::getNext() {
             }
 
         }
-        if (trigger == "timepoint") {
+        if (trigger_type == 2) {
             if (current_time >= day_start + timepoint_min) {
 
                 if (daysdaily == "everyday") {
@@ -642,7 +647,7 @@ MyNode::NextTime MyNode::getNext() {
             }
         }
 
-        if (trigger == "sunrise") {
+        if (trigger_type == 0) {
             if (current_time >= sunrise_time + offset) {
 
                 if (next == current_weekday) {
@@ -719,7 +724,7 @@ MyNode::NextTime MyNode::getNext() {
 
             }
         }
-        if (trigger == "sunset") {
+        if (trigger_type == 1) {
 
             if (current_time >= sunset_time + offset) {
 
@@ -792,7 +797,7 @@ MyNode::NextTime MyNode::getNext() {
                 return struct_Next_Time;
             }
         }
-        if (trigger == "timepoint") {
+        if (trigger_type == 2) {
             if (current_time >= day_start + timepoint_min) {
 
                 if (next == current_weekday) {
@@ -907,7 +912,7 @@ MyNode::NextTime MyNode::getNext() {
             }
         }
 
-        if (trigger == "sunrise") {
+        if (trigger_type == 0) {
             if (current_time >= sunrise_time + offset) {
 
                 if (next < current_monthday) {
@@ -975,7 +980,7 @@ MyNode::NextTime MyNode::getNext() {
 
             }
         }
-        if (trigger == "sunset") {
+        if (trigger_type == 1) {
 
             if (current_time >= sunset_time + offset) {
 
@@ -1044,7 +1049,7 @@ MyNode::NextTime MyNode::getNext() {
             }
 
         }
-        if (trigger == "timepoint") {
+        if (trigger_type == 2) {
             if (current_time >= day_start + timepoint_min) {
 
                 if (next < current_monthday) {
@@ -1176,7 +1181,7 @@ MyNode::NextTime MyNode::getNext() {
             }
         }
 
-        if (trigger == "sunrise") {
+        if (trigger_type == 0) {
             if (current_time >= sunrise_time + offset) {
 
                 if (next_day == current_monthhday) {
@@ -1288,7 +1293,7 @@ MyNode::NextTime MyNode::getNext() {
 
             }
         }
-        if (trigger == "sunset") {
+        if (trigger_type == 1) {
 
             if (current_time >= sunset_time + offset) {
 
@@ -1396,7 +1401,7 @@ MyNode::NextTime MyNode::getNext() {
             }
 
         }
-        if (trigger == "timepoint") {
+        if (trigger_type == 2) {
             if (current_time >= day_start + timepoint_min) {
 
                 if (next_day == current_monthhday) {
