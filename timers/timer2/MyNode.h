@@ -65,7 +65,7 @@ class MyNode : public Flows::INode {
   std::string _type;
   std::string _trigger;
   int64_t _onOffset;
-  int64_t _timepoint;
+  std::string _timepoint;
   int64_t _period;
   std::string _daysdaily;
   int64_t _lastTime;
@@ -88,9 +88,10 @@ class MyNode : public Flows::INode {
   void printNext(NextTime next);
   std::vector<int> BoolVectorToIntVector(std::vector<bool> boolVal);
   int GetDaysMax();
-  int SearchForHigherOrEqualNumber(std::vector<int> vectors, int vector_max, int number, int valueForNoResult);
-  int SearchForSmallerNumber(std::vector<int> vectors, int vector_max, int number);
-  int SearchForHigherNumber(std::vector<int> vectors, int vector_max, int number);
+  std::vector<int32_t> SplitStringToIntVector (std::string string_to_split);
+  int SearchForHigherOrEqualNumber(std::vector<int32_t> &vectors, int vector_max, int number, int valueForNoResult);
+  int SearchForSmallerNumber(std::vector<int32_t> &vectors, int vector_max, int number);
+  int SearchForHigherNumber(std::vector<int32_t> &vectors, int vector_max, int number);
 };
 
 }

@@ -42,7 +42,6 @@ bool MyNode::init(const Flows::PNodeInfo &info) {
   try {
     auto settingsIterator = info->info->structValue->find("startup");
     if (settingsIterator != info->info->structValue->end()) _outputOnStartUp = settingsIterator->second->booleanValue;
-
     {
       std::lock_guard<std::mutex> timeVariableGuard(_timeVariableMutex);
       settingsIterator = info->info->structValue->find("ontime");

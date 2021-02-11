@@ -37,8 +37,8 @@
         <input  style="width: 65%" type="text" id="node-input-period" placeholder="1">
     </div>
     <div class="form-row hide" id="node-input-daysdaily-container">
-        <label style="width: 130px;" for="node-input-days"><i class="fa fa-random"></i> <span data-i18n="timer2.label.days"></span></label>
-        <select type="text" id="node-input-days" class="node-input-select2-nosearch" style="display: inline-block; width: 65%;"></select>
+        <label style="width: 130px;" for="node-input-daysdaily"><i class="fa fa-random"></i> <span data-i18n="timer2.label.days"></span></label>
+        <select type="text" id="node-input-daysdaily" class="node-input-select2-nosearch" style="display: inline-block; width: 65%;"></select>
     </div>
     <div class="form-row hide" id="node-input-weekdays-container">
         <label  style="width: 130px" for="node-input-weekdays"><i class="fa fa-clock-o"></i> <span data-i18n="timer2.label.weekdays"></span></label>
@@ -133,7 +133,7 @@
             typeSelect: {value: "daily"},
             trigger: {value: "sunrise"},
             startoff: {value:"0", validate:RED.validators.number() },
-            timepoint: {value: "0", validate:RED.validators.number()},
+            timepoint: {value: "0"},
             period: {value: "1", validate:RED.validators.number(), required: true},
             daysdaily: {value: "everyday"},
             sun: {value:true},
@@ -225,11 +225,11 @@
             variableTypeSelect.append($("<option />").val("timepoint").text(RED._("timers/timer2:timer2.label.timepoint")));
             variableTypeSelect.val(node.trigger);
 
-            var variableTypeSelect = $("#node-input-days");
+            var variableTypeSelect = $("#node-input-daysdaily");
             variableTypeSelect.append($("<option />").val("everyday").text(RED._("timers/timer2:timer2.label.everyday")));
             variableTypeSelect.append($("<option />").val("workday").text(RED._("timers/timer2:timer2.label.workday")));
             variableTypeSelect.append($("<option />").val("weekend").text(RED._("timers/timer2:timer2.label.weekend")));
-            variableTypeSelect.val(node.days);
+            variableTypeSelect.val(node.daysdaily);
 
 
 
@@ -257,25 +257,25 @@
 
                 var typeselect = $("#node-input-typeSelect").val();
                 if (typeselect === "daily") {
-                    $("#node-input-days-container").show();
+                    $("#node-input-daysdaily-container").show();
                     $("#node-input-daysnumber-container").hide();
                     $("#node-input-weekdays-container").hide();
                     $("#node-input-months-container").hide();
 
                 } else if(typeselect === "weekly") {
-                    $("#node-input-days-container").hide();
+                    $("#node-input-daysdaily-container").hide();
                     $("#node-input-daysnumber-container").hide();
                     $("#node-input-weekdays-container").show();
                     $("#node-input-months-container").hide();
 
                 } else if(typeselect === "monthly") {
-                    $("#node-input-days-container").hide();
+                    $("#node-input-daysdaily-container").hide();
                     $("#node-input-daysnumber-container").show();
                     $("#node-input-weekdays-container").hide();
                     $("#node-input-months-container").hide();
 
                 } else if(typeselect === "yearly") {
-                    $("#node-input-days-container").hide();
+                    $("#node-input-daysdaily-container").hide();
                     $("#node-input-daysnumber-container").show();
                     $("#node-input-weekdays-container").hide();
                     $("#node-input-months-container").show();
@@ -283,7 +283,7 @@
             }
 
             function updateTypeDays () {
-                var typeselect = $("#node-input-days").val();
+                var typeselect = $("#node-input-daysdaily").val();
 
                 if (typeselect === "everyday"){
                     $("#node-input-period-container").show();
@@ -302,7 +302,7 @@
             updateOffsetTimepoint();
             $("#node-input-typeSelect").change(function (){updateType()});
             $("#node-input-trigger").change(function (){updateOffsetTimepoint()});
-            $("#node-input-days").change(function (){updateTypeDays()});
+            $("#node-input-daysdaily").change(function (){updateTypeDays()});
 
 
 
