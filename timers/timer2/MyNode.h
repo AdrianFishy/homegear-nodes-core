@@ -89,9 +89,10 @@ class MyNode : public Flows::INode {
   std::vector<int> BoolVectorToIntVector(std::vector<bool> boolVal);
   int GetDaysMax();
   std::vector<int32_t> SplitStringToIntVector (std::string string_to_split);
-  int SearchForHigherOrEqualNumber(std::vector<int32_t> &vectors, int vector_max, int number, int valueForNoResult);
-  int SearchForSmallerNumber(std::vector<int32_t> &vectors, int vector_max, int number);
-  int SearchForHigherNumber(std::vector<int32_t> &vectors, int vector_max, int number);
+  int GetOffsetWeekday (int current_weekday, int next);
+  int SearchForHigherOrEqualNumber(std::vector<int32_t> &vectors, int day_max, int number, int valueForNoResult);
+  int SearchForSmallerNumber(std::vector<int32_t> &vectors, int day_max, int number, int valueForNoResult);
+  int SearchForHigherNumber(std::vector<int32_t> &vectors, int day_max, int number, int valueForNoResult);
 };
 
 }
