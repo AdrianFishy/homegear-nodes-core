@@ -4,42 +4,42 @@ project(homegear_nodes_core)
 set(CMAKE_CXX_STANDARD 17)
 
 set(SOURCE_FILES
-        average/Factory.cpp
-        average/Factory.h
-        average/MyNode.cpp
-        average/MyNode.h
-        basic-logic/and/Factory.cpp
-        basic-logic/and/Factory.h
-        basic-logic/and/MyNode.cpp
-        basic-logic/and/MyNode.h
+		average/Factory.cpp
+		average/Factory.h
+		average/MyNode.cpp
+		average/MyNode.h
+		basic-logic/and/Factory.cpp
+		basic-logic/and/Factory.h
+		basic-logic/and/MyNode.cpp
+		basic-logic/and/MyNode.h
 		basic-logic/change/Factory.cpp
 		basic-logic/change/Factory.h
 		basic-logic/change/Change.cpp
 		basic-logic/change/Change.h
-        basic-logic/fallingedge/Factory.cpp
-        basic-logic/fallingedge/Factory.h
-        basic-logic/fallingedge/MyNode.cpp
-        basic-logic/fallingedge/MyNode.h
-        basic-logic/not/Factory.cpp
-        basic-logic/not/Factory.h
-        basic-logic/not/MyNode.cpp
-        basic-logic/not/MyNode.h
-        basic-logic/or/Factory.cpp
-        basic-logic/or/Factory.h
-        basic-logic/or/MyNode.cpp
-        basic-logic/or/MyNode.h
-        basic-logic/risingedge/Factory.cpp
-        basic-logic/risingedge/Factory.h
-        basic-logic/risingedge/MyNode.cpp
-        basic-logic/risingedge/MyNode.h
-        basic-logic/srflipflop/Factory.cpp
-        basic-logic/srflipflop/Factory.h
+		basic-logic/fallingedge/Factory.cpp
+		basic-logic/fallingedge/Factory.h
+		basic-logic/fallingedge/MyNode.cpp
+		basic-logic/fallingedge/MyNode.h
+		basic-logic/not/Factory.cpp
+		basic-logic/not/Factory.h
+		basic-logic/not/MyNode.cpp
+		basic-logic/not/MyNode.h
+		basic-logic/or/Factory.cpp
+		basic-logic/or/Factory.h
+		basic-logic/or/MyNode.cpp
+		basic-logic/or/MyNode.h
+		basic-logic/risingedge/Factory.cpp
+		basic-logic/risingedge/Factory.h
+		basic-logic/risingedge/MyNode.cpp
+		basic-logic/risingedge/MyNode.h
+		basic-logic/srflipflop/Factory.cpp
+		basic-logic/srflipflop/Factory.h
 		basic-logic/srflipflop/MyNode.cpp
 		basic-logic/srflipflop/MyNode.h
-        basic-logic/switch/Factory.cpp
-        basic-logic/switch/Factory.h
-        basic-logic/switch/Switch.cpp
-        basic-logic/switch/Switch.h
+		basic-logic/switch/Factory.cpp
+		basic-logic/switch/Factory.h
+		basic-logic/switch/Switch.cpp
+		basic-logic/switch/Switch.h
 		basic-logic/variable-switch/Factory.cpp
 		basic-logic/variable-switch/Factory.h
 		basic-logic/variable-switch/MyNode.cpp
@@ -48,10 +48,10 @@ set(SOURCE_FILES
 		catch/Factory.h
 		catch/Catch.cpp
 		catch/Catch.h
-        debug/Factory.cpp
-        debug/Factory.h
-        debug/MyNode.cpp
-        debug/MyNode.h
+		debug/Factory.cpp
+		debug/Factory.h
+		debug/MyNode.cpp
+		debug/MyNode.h
 		exec/Factory.cpp
 		exec/Factory.h
 		exec/Exec.cpp
@@ -60,94 +60,94 @@ set(SOURCE_FILES
 		homegear-event/Factory.h
 		homegear-event/MyNode.cpp
 		homegear-event/MyNode.h
-        http/http-in/Factory.cpp
-        http/http-in/Factory.h
-        http/http-in/MyNode.cpp
-        http/http-in/MyNode.h
-        http/http-response/Factory.cpp
-        http/http-response/Factory.h
-        http/http-response/MyNode.cpp
-        http/http-response/MyNode.h
-        http/http-request/Factory.cpp
-        http/http-request/Factory.h
-        http/http-request/MyNode.cpp
-        http/http-request/MyNode.h
-        http/http-server/Factory.cpp
-        http/http-server/Factory.h
-        http/http-server/MyNode.cpp
-        http/http-server/MyNode.h
-        influxdb/Factory.cpp
-        influxdb/Factory.h
-        influxdb/MyNode.cpp
-        influxdb/MyNode.h
-        light/Factory.cpp
-        light/Factory.h
-        light/Light.cpp
-        light/Light.h
-        link/link-in/Factory.cpp
-        link/link-in/Factory.h
-        link/link-in/MyNode.cpp
-        link/link-in/MyNode.h
-        link/link-out/Factory.cpp
-        link/link-out/Factory.h
-        link/link-out/MyNode.cpp
-        link/link-out/MyNode.h
-        modbus/modbus-host/Factory.cpp
-        modbus/modbus-host/Factory.h
-        modbus/modbus-host/Modbus.cpp
-        modbus/modbus-host/Modbus.h
-        modbus/modbus-host/MyNode.cpp
-        modbus/modbus-host/MyNode.h
-        modbus/modbus-in/Factory.cpp
-        modbus/modbus-in/Factory.h
-        modbus/modbus-in/MyNode.cpp
-        modbus/modbus-in/MyNode.h
-        modbus/modbus-out/Factory.cpp
-        modbus/modbus-out/Factory.h
-        modbus/modbus-out/MyNode.cpp
-        modbus/modbus-out/MyNode.h
-        mqtt/mqtt-broker/Factory.cpp
-        mqtt/mqtt-broker/Factory.h
-        mqtt/mqtt-broker/Mqtt.cpp
-        mqtt/mqtt-broker/Mqtt.h
-        mqtt/mqtt-broker/MyNode.cpp
-        mqtt/mqtt-broker/MyNode.h
-        mqtt/mqtt-in/Factory.cpp
-        mqtt/mqtt-in/Factory.h
-        mqtt/mqtt-in/MyNode.cpp
-        mqtt/mqtt-in/MyNode.h
-        mqtt/mqtt-out/Factory.cpp
-        mqtt/mqtt-out/Factory.h
-        mqtt/mqtt-out/MyNode.cpp
-        mqtt/mqtt-out/MyNode.h
-        parsers/json/Factory.cpp
-        parsers/json/Factory.h
-        parsers/json/MyNode.cpp
-        parsers/json/MyNode.h
+		http/http-in/Factory.cpp
+		http/http-in/Factory.h
+		http/http-in/MyNode.cpp
+		http/http-in/MyNode.h
+		http/http-response/Factory.cpp
+		http/http-response/Factory.h
+		http/http-response/MyNode.cpp
+		http/http-response/MyNode.h
+		http/http-request/Factory.cpp
+		http/http-request/Factory.h
+		http/http-request/MyNode.cpp
+		http/http-request/MyNode.h
+		http/http-server/Factory.cpp
+		http/http-server/Factory.h
+		http/http-server/MyNode.cpp
+		http/http-server/MyNode.h
+		influxdb/Factory.cpp
+		influxdb/Factory.h
+		influxdb/MyNode.cpp
+		influxdb/MyNode.h
+		light/Factory.cpp
+		light/Factory.h
+		light/Light.cpp
+		light/Light.h
+		link/link-in/Factory.cpp
+		link/link-in/Factory.h
+		link/link-in/MyNode.cpp
+		link/link-in/MyNode.h
+		link/link-out/Factory.cpp
+		link/link-out/Factory.h
+		link/link-out/MyNode.cpp
+		link/link-out/MyNode.h
+		modbus/modbus-host/Factory.cpp
+		modbus/modbus-host/Factory.h
+		modbus/modbus-host/Modbus.cpp
+		modbus/modbus-host/Modbus.h
+		modbus/modbus-host/MyNode.cpp
+		modbus/modbus-host/MyNode.h
+		modbus/modbus-in/Factory.cpp
+		modbus/modbus-in/Factory.h
+		modbus/modbus-in/MyNode.cpp
+		modbus/modbus-in/MyNode.h
+		modbus/modbus-out/Factory.cpp
+		modbus/modbus-out/Factory.h
+		modbus/modbus-out/MyNode.cpp
+		modbus/modbus-out/MyNode.h
+		mqtt/mqtt-broker/Factory.cpp
+		mqtt/mqtt-broker/Factory.h
+		mqtt/mqtt-broker/Mqtt.cpp
+		mqtt/mqtt-broker/Mqtt.h
+		mqtt/mqtt-broker/MyNode.cpp
+		mqtt/mqtt-broker/MyNode.h
+		mqtt/mqtt-in/Factory.cpp
+		mqtt/mqtt-in/Factory.h
+		mqtt/mqtt-in/MyNode.cpp
+		mqtt/mqtt-in/MyNode.h
+		mqtt/mqtt-out/Factory.cpp
+		mqtt/mqtt-out/Factory.h
+		mqtt/mqtt-out/MyNode.cpp
+		mqtt/mqtt-out/MyNode.h
+		parsers/json/Factory.cpp
+		parsers/json/Factory.h
+		parsers/json/MyNode.cpp
+		parsers/json/MyNode.h
 		parsers/xml/Factory.cpp
 		parsers/xml/Factory.h
 		parsers/xml/Xml.cpp
 		parsers/xml/Xml.h
-        passthrough/Factory.cpp
-        passthrough/Factory.h
-        passthrough/MyNode.cpp
-        passthrough/MyNode.h
-        ping/Factory.cpp
-        ping/Factory.h
-        ping/MyNode.cpp
-        ping/MyNode.h
+		passthrough/Factory.cpp
+		passthrough/Factory.h
+		passthrough/MyNode.cpp
+		passthrough/MyNode.h
+		ping/Factory.cpp
+		ping/Factory.h
+		ping/MyNode.cpp
+		ping/MyNode.h
 		presence-light/Factory.cpp
 		presence-light/Factory.h
 		presence-light/PresenceLight.cpp
 		presence-light/PresenceLight.h
-        press-pattern/Factory.cpp
-        press-pattern/Factory.h
-        press-pattern/MyNode.cpp
-        press-pattern/MyNode.h
-        pulsecounter/Factory.cpp
-        pulsecounter/Factory.h
-        pulsecounter/MyNode.cpp
-        pulsecounter/MyNode.h
+		press-pattern/Factory.cpp
+		press-pattern/Factory.h
+		press-pattern/MyNode.cpp
+		press-pattern/MyNode.h
+		pulsecounter/Factory.cpp
+		pulsecounter/Factory.h
+		pulsecounter/MyNode.cpp
+		pulsecounter/MyNode.h
 		python/Factory.cpp
 		python/Factory.h
 		python/Python.cpp
@@ -172,10 +172,10 @@ set(SOURCE_FILES
 		status/Factory.h
 		status/Status.cpp
 		status/Status.h
-        storage/file/Factory.cpp
-        storage/file/Factory.h
-        storage/file/MyNode.cpp
-        storage/file/MyNode.h
+		storage/file/Factory.cpp
+		storage/file/Factory.h
+		storage/file/MyNode.cpp
+		storage/file/MyNode.h
 		tcp/tcp-in/Factory.cpp
 		tcp/tcp-in/Factory.h
 		tcp/tcp-in/MyNode.cpp
@@ -188,15 +188,15 @@ set(SOURCE_FILES
 		tcp/tcp-socket/Factory.h
 		tcp/tcp-socket/MyNode.cpp
 		tcp/tcp-socket/MyNode.h
-        template/Factory.cpp
-        template/Factory.h
-        template/mustache.h
-        template/MyNode.cpp
-        template/MyNode.h
-        timers/clock/Factory.cpp
-        timers/clock/Factory.h
-        timers/clock/MyNode.cpp
-        timers/clock/MyNode.h
+		template/Factory.cpp
+		template/Factory.h
+		template/mustache.h
+		template/MyNode.cpp
+		template/MyNode.h
+		timers/clock/Factory.cpp
+		timers/clock/Factory.h
+		timers/clock/MyNode.cpp
+		timers/clock/MyNode.h
 		timers/delay/Factory.cpp
 		timers/delay/Factory.h
 		timers/delay/MyNode.cpp
@@ -205,18 +205,18 @@ set(SOURCE_FILES
 		timers/impulse/Factory.h
 		timers/impulse/MyNode.cpp
 		timers/impulse/MyNode.h
-        timers/interval/Factory.cpp
-        timers/interval/Factory.h
-        timers/interval/MyNode.cpp
-        timers/interval/MyNode.h
-        timers/off-delay/Factory.cpp
-        timers/off-delay/Factory.h
-        timers/off-delay/MyNode.cpp
-        timers/off-delay/MyNode.h
-        timers/on-delay/Factory.cpp
-        timers/on-delay/Factory.h
-        timers/on-delay/MyNode.cpp
-        timers/on-delay/MyNode.h
+		timers/interval/Factory.cpp
+		timers/interval/Factory.h
+		timers/interval/MyNode.cpp
+		timers/interval/MyNode.h
+		timers/off-delay/Factory.cpp
+		timers/off-delay/Factory.h
+		timers/off-delay/MyNode.cpp
+		timers/off-delay/MyNode.h
+		timers/on-delay/Factory.cpp
+		timers/on-delay/Factory.h
+		timers/on-delay/MyNode.cpp
+		timers/on-delay/MyNode.h
 		timers/ramp-to/Factory.cpp
 		timers/ramp-to/Factory.h
 		timers/ramp-to/RampTo.cpp
@@ -225,22 +225,22 @@ set(SOURCE_FILES
 		timers/rate-limiter/Factory.h
 		timers/rate-limiter/MyNode.cpp
 		timers/rate-limiter/MyNode.h
-        timers/slow-pwm/Factory.cpp
-        timers/slow-pwm/Factory.h
-        timers/slow-pwm/MyNode.cpp
-        timers/slow-pwm/MyNode.h
-        timers/sun-position/Factory.cpp
-        timers/sun-position/Factory.h
-        timers/sun-position/MyNode.cpp
-        timers/sun-position/MyNode.h
-        timers/sun-position/SunTime.cpp
-        timers/sun-position/SunTime.h
-        timers/timer/Factory.cpp
-        timers/timer/Factory.h
-        timers/timer/MyNode.cpp
-        timers/timer/MyNode.h
-        timers/timer/SunTime.cpp
-        timers/timer2/SunTime.h
+		timers/slow-pwm/Factory.cpp
+		timers/slow-pwm/Factory.h
+		timers/slow-pwm/MyNode.cpp
+		timers/slow-pwm/MyNode.h
+		timers/sun-position/Factory.cpp
+		timers/sun-position/Factory.h
+		timers/sun-position/MyNode.cpp
+		timers/sun-position/MyNode.h
+		timers/sun-position/SunTime.cpp
+		timers/sun-position/SunTime.h
+		timers/timer/Factory.cpp
+		timers/timer/Factory.h
+		timers/timer/MyNode.cpp
+		timers/timer/MyNode.h
+		timers/timer/SunTime.cpp
+		timers/timer2/SunTime.h
 		timers/timer2/Factory.cpp
 		timers/timer2/Factory.h
 		timers/timer2/MyNode.cpp
@@ -253,14 +253,14 @@ set(SOURCE_FILES
 		timers/weekly-program/MyNode.h
 		timers/weekly-program/SunTime.cpp
 		timers/weekly-program/SunTime.h
-        tls-config/Factory.cpp
-        tls-config/Factory.h
-        tls-config/MyNode.cpp
-        tls-config/MyNode.h
-        tls-server-config/Factory.cpp
-        tls-server-config/Factory.h
-        tls-server-config/MyNode.cpp
-        tls-server-config/MyNode.h
+		tls-config/Factory.cpp
+		tls-config/Factory.h
+		tls-config/MyNode.cpp
+		tls-config/MyNode.h
+		tls-server-config/Factory.cpp
+		tls-server-config/Factory.h
+		tls-server-config/MyNode.cpp
+		tls-server-config/MyNode.h
 		udp/udp-in/Factory.cpp
 		udp/udp-in/Factory.h
 		udp/udp-in/UdpIn.cpp
@@ -273,30 +273,30 @@ set(SOURCE_FILES
 		unit-test-helper/Factory.h
 		unit-test-helper/UnitTestHelper.cpp
 		unit-test-helper/UnitTestHelper.h
-        variable/constant/Factory.cpp
-        variable/constant/Factory.h
-        variable/constant/MyNode.cpp
-        variable/constant/MyNode.h
+		variable/constant/Factory.cpp
+		variable/constant/Factory.h
+		variable/constant/MyNode.cpp
+		variable/constant/MyNode.h
 		variable/round-robin-shift/Factory.cpp
 		variable/round-robin-shift/Factory.h
 		variable/round-robin-shift/MyNode.cpp
 		variable/round-robin-shift/MyNode.h
-        variable/toggle/Factory.cpp
-        variable/toggle/Factory.h
-        variable/toggle/MyNode.cpp
-        variable/toggle/MyNode.h
-        variable/variable-in/Factory.cpp
-        variable/variable-in/Factory.h
-        variable/variable-in/VariableIn.cpp
-        variable/variable-in/VariableIn.h
-        variable/variable-loop-prevention-group/Factory.cpp
-        variable/variable-loop-prevention-group/Factory.h
-        variable/variable-loop-prevention-group/MyNode.cpp
-        variable/variable-loop-prevention-group/MyNode.h
-        variable/variable-out/Factory.cpp
-        variable/variable-out/Factory.h
-        variable/variable-out/MyNode.cpp
-        variable/variable-out/MyNode.h)
+		variable/toggle/Factory.cpp
+		variable/toggle/Factory.h
+		variable/toggle/MyNode.cpp
+		variable/toggle/MyNode.h
+		variable/variable-in/Factory.cpp
+		variable/variable-in/Factory.h
+		variable/variable-in/VariableIn.cpp
+		variable/variable-in/VariableIn.h
+		variable/variable-loop-prevention-group/Factory.cpp
+		variable/variable-loop-prevention-group/Factory.h
+		variable/variable-loop-prevention-group/MyNode.cpp
+		variable/variable-loop-prevention-group/MyNode.h
+		variable/variable-out/Factory.cpp
+		variable/variable-out/Factory.h
+		variable/variable-out/MyNode.cpp
+		variable/variable-out/MyNode.h)
 
 add_custom_target(homegear COMMAND ../../devscripts/makeAll.sh SOURCES ${SOURCE_FILES})
 

@@ -348,8 +348,6 @@ std::string MyNode::getDateString(int64_t time) {
 void MyNode::printNext(int64_t currentTime, int64_t onTime, int64_t offTime) {
   try {
     auto next = getNext(currentTime, onTime, offTime);
-      _out->printError("timer first " + std::to_string(next.first));
-      _out->printError("timer second " + std::to_string(next.second));
     Flows::PVariable status = std::make_shared<Flows::Variable>(Flows::VariableType::tStruct);
     if (next.first == -1) {
       status->structValue->emplace("text", std::make_shared<Flows::Variable>("Next: Unknown"));

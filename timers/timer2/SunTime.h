@@ -181,6 +181,8 @@ class SunTime {
 
   MoonCoords moonCoords(long double d);
   int64_t hoursLater(int64_t date, int32_t h);
+  int64_t _lasttime;
+  int64_t _timevalue;
 };
 
 }

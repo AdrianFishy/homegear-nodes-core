@@ -48,6 +48,7 @@ class MyNode : public Flows::INode {
   void startUpComplete() override;
   void stop() override;
   void waitForStop() override;
+
  private:
   SunTime _sunTime;
   std::atomic_bool _enabled{true};
@@ -77,7 +78,10 @@ class MyNode : public Flows::INode {
   std::vector<bool> _weekdays;
   std::vector<bool> _months;
   std::vector<bool> _days;
-
+  int64_t _current_time = 0;
+  bool _simulate = false;
+  std::tm _tm{};
+  struct tm * _ptm;
 
   std::vector<std::string> splitAll(std::string string, char delimiter);
   void timer();
@@ -87,7 +91,8 @@ class MyNode : public Flows::INode {
   NextTime getNext();
   void printNext(NextTime next);
   std::vector<int> BoolVectorToIntVector(std::vector<bool> boolVal);
-  int GetDaysMax();
+  int GetDaysMaxCurrentMonth();
+  int GetDaysMaxThisMonth(int month);
   std::vector<int32_t> SplitStringToIntVector (std::string string_to_split);
   int GetOffsetWeekday (int current_weekday, int next);
   int SearchForHigherOrEqualNumber(std::vector<int32_t> &vectors, int day_max, int number, int valueForNoResult);
