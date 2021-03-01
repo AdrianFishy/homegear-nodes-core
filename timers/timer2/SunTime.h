@@ -47,11 +47,13 @@
 #include <unordered_map>
 #include <vector>
 #include <cmath>
+#include "SimulateTime.h"
 
 namespace Timer2 {
 
 class SunTime {
  public:
+  SimulateTime _SimTime;
   enum class SunTimeTypes {
     sunrise,
     sunset,

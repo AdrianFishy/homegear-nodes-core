@@ -31,6 +31,7 @@
 #define MYNODE_H_
 
 #include "SunTime.h"
+#include "SimulateTime.h"
 #include <homegear-node/INode.h>
 #include <thread>
 #include <mutex>
@@ -48,6 +49,8 @@ class MyNode : public Flows::INode {
   void startUpComplete() override;
   void stop() override;
   void waitForStop() override;
+
+
 
  private:
   SunTime _sunTime;
@@ -79,9 +82,10 @@ class MyNode : public Flows::INode {
   std::vector<bool> _months;
   std::vector<bool> _days;
   int64_t _current_time = 0;
-  bool _simulate = false;
+
+ private:
   std::tm _tm{};
-  struct tm * _ptm;
+  time_t _simulated_time = 0;
 
   std::vector<std::string> splitAll(std::string string, char delimiter);
   void timer();

@@ -88,23 +88,12 @@ bool MyNode::init(const Flows::PNodeInfo &info) {
 
         settingsIterator = info->info->structValue->find("simulatedTime");
         if (settingsIterator != info->info->structValue->end()) {
-            _current_time = Flows::Math::getNumber64(settingsIterator->second->stringValue);
-            _ptm = gmtime(&_current_time);
-            _tm.tm_mday =_ptm->tm_mday;
-            _tm.tm_yday =_ptm->tm_yday;
-            _tm.tm_year = _ptm->tm_year + 1900;
-            _tm.tm_mon = _ptm->tm_mon + 1;
-            _tm.tm_wday = _ptm->tm_wday;
-            _simulate = true;
-
-
-        }
-        else {
-            _current_time = _sunTime.getLocalTime();
-            _sunTime.getTimeStruct(_tm);
+            _simulated_time = Flows::Math::getNumber64(settingsIterator->second->stringValue);
+            _current_time = _sunTime.getLocalTime(_simulated_time);
+            _sunTime.getTimeStruct(_tm,_current_time);
             _tm.tm_year = _tm.tm_year + 1900;
             _tm.tm_mon = _tm.tm_mon + 1;
-            _simulate = false;
+
         }
 
         _weekdays.reserve(7);
@@ -1540,43 +1529,30 @@ void MyNode::printNext(NextTime next) {
 }
 
 void MyNode::timer() {
-    int64_t tick = 0;
-    int64_t lasttick;
     int64_t current_time = _current_time;
     int64_t last_time = _current_time;
 
     auto next_time = getNext();
     printNext(next_time);
     bool update = false;
-    int64_t time = getTime(SunTime().getLocalTime(), "sunrise", "suntime", 0);
     _lastTime = 86341;
-    //_out->printError("PTM_tm.tm_mday " + std::to_string(_tm.tm_mday));
-    //_out->printError("PTM_tm.tm_mon " + std::to_string(_tm.tm_mon));
-    //_out->printError("PTM_tm.tm_year " + std::to_string(_tm.tm_year));
 
-
-
-    //_out->printError("_sunTime.getLocalTime()" + std::to_string(_sunTime.getLocalTime()));
     while (!_stopThread) {
         try {
-            if (_simulate) {
-                tick = _sunTime.getLocalTime() / 1000;
-                if (tick != lasttick) {
-                    _current_time += 1;
-                    lasttick = tick;
-                    current_time = _current_time;
-                    current_time = current_time % 86400;
-                }
-            }else {
-                current_time = _sunTime.getLocalTime();
-                current_time = current_time / 1000;
-                current_time = current_time % 86400;
-            }
 
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
             if (_stopThread) {
                 break;
             }
+
+            current_time = _sunTime.getLocalTime(_simulated_time);
+            _current_time = current_time;
+            current_time = current_time / 1000;
+            current_time = current_time % 86400;
+            _out->printError("_current_time " + std::to_string(_current_time));
+            _sunTime.getTimeStruct(_tm,_current_time);
+            _tm.tm_year = _tm.tm_year + 1900;
+            _tm.tm_mon = _tm.tm_mon + 1;
 
             int64_t time_next = next_time.time;
             time_next = time_next / 1000;
@@ -1596,32 +1572,34 @@ void MyNode::timer() {
             month_next = next_time.month;
             year_next = next_time.year;
 
-            //_out->printError("time_next " + std::to_string(time_next));
-            //_out->printError("current_time " + std::to_string(current_time));
-            //_out->printError("day_next " + std::to_string(day_next));
-            //_out->printError("current_day " + std::to_string(current_day));
-            //_out->printError("current_month " + std::to_string(current_month));
-            //_out->printError("month_next " + std::to_string(month_next));
-            //_out->printError("current_year " + std::to_string(current_year));
-            //_out->printError("year_next " + std::to_string(year_next));
-            //_out->printError("_lastTime " + std::to_string(_lastTime));
-            //_out->printError("---------------------------------------");
-
-            current_time = _sunTime.getLocalTime(1000000000000);
+            _out->printError("time_next " + std::to_string(time_next));
             _out->printError("current_time " + std::to_string(current_time));
+            _out->printError("day_next " + std::to_string(day_next));
+            _out->printError("current_day " + std::to_string(current_day));
+            _out->printError("month_next " + std::to_string(month_next));
+            _out->printError("current_month " + std::to_string(current_month));
+            _out->printError("current_year " + std::to_string(current_year));
+            _out->printError("year_next " + std::to_string(year_next));
+            _out->printError("_lastTime " + std::to_string(_lastTime));
+            _out->printError("---------------------------------------");
+
+            //auto sim_time = _sunTime.getLocalTime(1614348261);
+            //_out->printError("sim_time " + std::to_string(sim_time));
+            //current_time = _sunTime.getLocalTime();
+            //_out->printError("current_time " + std::to_string(current_time));
 
 
 
             if (current_time == time_next && current_day == day_next && current_month == month_next && current_year == year_next && _lastTime / 1000 != current_time / 1000) {
                 _lastTime = current_time;
-                _out->printError("_lastTime " + std::to_string(_lastTime));
-                _out->printError("current_time " + std::to_string(current_time));
                 update = true;
                 setNodeData("lastOnTime", std::make_shared<Flows::Variable>(_lastTime));
                 Flows::PVariable message = std::make_shared<Flows::Variable>(Flows::VariableType::tStruct);
                 message->structValue->emplace("payload", std::make_shared<Flows::Variable>(true));
                 output(0, message);
+                _out->printError("---------------------------------------");
                 _out->printError("payload = true");
+                _out->printError("---------------------------------------");
 
             }
 
@@ -1672,5 +1650,6 @@ void MyNode::input(const Flows::PNodeInfo &info, uint32_t index, const Flows::PV
         _out->printEx(__FILE__, __LINE__, __PRETTY_FUNCTION__);
     }
 }
+
 
 }
