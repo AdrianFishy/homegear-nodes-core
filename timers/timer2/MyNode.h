@@ -54,6 +54,7 @@ class MyNode : public Flows::INode {
 
  private:
   SunTime _sunTime;
+  SimulateTime _simTime;
   std::atomic_bool _enabled{true};
   bool _outputOnStartUp = false;
   std::mutex _timeVariableMutex;

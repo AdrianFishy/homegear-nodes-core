@@ -89,13 +89,21 @@ bool MyNode::init(const Flows::PNodeInfo &info) {
         settingsIterator = info->info->structValue->find("simulatedTime");
         if (settingsIterator != info->info->structValue->end()) {
             _simulated_time = Flows::Math::getNumber64(settingsIterator->second->stringValue);
-            _current_time = _sunTime.getLocalTime(_simulated_time);
+            _current_time = _simTime.getSimulatedTime(_simulated_time);
             _sunTime.getTimeStruct(_tm,_current_time);
             _tm.tm_year = _tm.tm_year + 1900;
             _tm.tm_mon = _tm.tm_mon + 1;
+            _out->printError("TEST1 ");
 
+        }else{
+            _current_time = _sunTime.getLocalTime();
+            _sunTime.getTimeStruct(_tm,_current_time);
+            _tm.tm_year = _tm.tm_year + 1900;
+            _tm.tm_mon = _tm.tm_mon + 1;
+            _out->printError("TEST2 ");
         }
 
+        _out->printError("_current_time " + std::to_string(_current_time));
         _weekdays.reserve(7);
         _months.reserve(12);
         _days.reserve(31);
@@ -391,6 +399,8 @@ MyNode::NextTime MyNode::getNext() {
     int64_t sunset_time = getSunTime(current_time, "sunset");
     int64_t timepoint_min = 10;
 
+
+
     int month = _tm.tm_mon;
     int year = _tm.tm_year;
     int64_t day_start = current_time - (current_time % 86400000);
@@ -598,7 +608,6 @@ MyNode::NextTime MyNode::getNext() {
                 struct_Next_Time.month = month;
 
                 if (struct_Next_Time.day > days_mmax) {
-
                     do {
                         struct_Next_Time.day = struct_Next_Time.day - GetDaysMaxThisMonth(struct_Next_Time.month);
 
@@ -698,21 +707,28 @@ MyNode::NextTime MyNode::getNext() {
                     next = current_month_day + max_weekdays;
                 }
 
-                if (next > days_mmax) {
-                    next = days_mmax - next;
-                    struct_Next_Time.month = current_month + 1;
+                struct_Next_Time.time = day_start + timepoint_min;
+                struct_Next_Time.day = next + period_weekdays;
+                struct_Next_Time.month = month;
+
+                if (struct_Next_Time.day > days_mmax) {
+                    do {
+                        struct_Next_Time.day = struct_Next_Time.day - GetDaysMaxThisMonth(struct_Next_Time.month);
+
+                        struct_Next_Time.month = struct_Next_Time.month + 1;
+
+                        if (struct_Next_Time.month > 12) {
+                            struct_Next_Time.month = struct_Next_Time.month - 12;
+                            struct_Next_Time.year = struct_Next_Time.year + 1;
+                        } else {
+                            struct_Next_Time.year = year;
+                        }
+
+                    } while (struct_Next_Time.day > GetDaysMaxThisMonth(struct_Next_Time.month));
                 } else {
-                    struct_Next_Time.month = current_month;
-                }
-                if (struct_Next_Time.month > 12) {
-                    struct_Next_Time.month = struct_Next_Time.month - 12;
-                    struct_Next_Time.year = struct_Next_Time.year + 1;
-                } else {
-                    struct_Next_Time.year = year;
+                    struct_Next_Time.month = _tm.tm_mon;
                 }
 
-                struct_Next_Time.time = sunrise_time + offset;
-                struct_Next_Time.day = next + period_weekdays;
                 return struct_Next_Time;
             }
             if (sunrise_time + offset > current_time) {
@@ -724,20 +740,27 @@ MyNode::NextTime MyNode::getNext() {
                     next = current_month_day + (next - current_weekday);
                 }
 
-                if (next > days_mmax) {
-                    next = days_mmax - next;
-                    struct_Next_Time.month = struct_Next_Time.month + 1;
+                struct_Next_Time.time = day_start + timepoint_min;
+                struct_Next_Time.day = next + period_weekdays;
+                struct_Next_Time.month = month;
+
+                if (struct_Next_Time.day > days_mmax) {
+                    do {
+                        struct_Next_Time.day = struct_Next_Time.day - GetDaysMaxThisMonth(struct_Next_Time.month);
+
+                        struct_Next_Time.month = struct_Next_Time.month + 1;
+
+                    } while (struct_Next_Time.day > GetDaysMaxThisMonth(struct_Next_Time.month));
                 } else {
-                    struct_Next_Time.month = current_month;
+                    struct_Next_Time.month = _tm.tm_mon;
                 }
+
                 if (struct_Next_Time.month > 12) {
                     struct_Next_Time.month = struct_Next_Time.month - 12;
-                    struct_Next_Time.year = struct_Next_Time.year + 1;
+                    struct_Next_Time.year = year + 1;
                 } else {
                     struct_Next_Time.year = year;
                 }
-                struct_Next_Time.time = sunrise_time + offset;
-                struct_Next_Time.day = next + period_weekdays;
                 return struct_Next_Time;
 
             }
@@ -764,21 +787,27 @@ MyNode::NextTime MyNode::getNext() {
                     next = next + max_weekdays;
                 }
 
-                if (next > days_mmax) {
-                    next = days_mmax - next;
-                    struct_Next_Time.month = struct_Next_Time.month + 1;
+                struct_Next_Time.time = day_start + timepoint_min;
+                struct_Next_Time.day = next + period_weekdays;
+                struct_Next_Time.month = month;
+
+                if (struct_Next_Time.day > days_mmax) {
+                    do {
+                        struct_Next_Time.day = struct_Next_Time.day - GetDaysMaxThisMonth(struct_Next_Time.month);
+
+                        struct_Next_Time.month = struct_Next_Time.month + 1;
+
+                    } while (struct_Next_Time.day > GetDaysMaxThisMonth(struct_Next_Time.month));
                 } else {
-                    struct_Next_Time.month = current_month;
+                    struct_Next_Time.month = _tm.tm_mon;
                 }
+
                 if (struct_Next_Time.month > 12) {
                     struct_Next_Time.month = struct_Next_Time.month - 12;
-                    struct_Next_Time.year = struct_Next_Time.year + 1;
+                    struct_Next_Time.year = year + 1;
                 } else {
                     struct_Next_Time.year = year;
                 }
-
-                struct_Next_Time.time = sunset_time + offset;
-                struct_Next_Time.day = next + period_weekdays;
                 return struct_Next_Time;
             }
             if (sunset_time + offset > current_time) {
@@ -790,20 +819,27 @@ MyNode::NextTime MyNode::getNext() {
                     next = current_month_day + (next - current_weekday);
                 }
 
-                if (next > days_mmax) {
-                    next = days_mmax - next;
-                    struct_Next_Time.month = struct_Next_Time.month + 1;
+                struct_Next_Time.time = day_start + timepoint_min;
+                struct_Next_Time.day = next + period_weekdays;
+                struct_Next_Time.month = month;
+
+                if (struct_Next_Time.day > days_mmax) {
+                    do {
+                        struct_Next_Time.day = struct_Next_Time.day - GetDaysMaxThisMonth(struct_Next_Time.month);
+
+                        struct_Next_Time.month = struct_Next_Time.month + 1;
+
+                    } while (struct_Next_Time.day > GetDaysMaxThisMonth(struct_Next_Time.month));
                 } else {
-                    struct_Next_Time.month = current_month;
+                    struct_Next_Time.month = _tm.tm_mon;
                 }
+
                 if (struct_Next_Time.month > 12) {
                     struct_Next_Time.month = struct_Next_Time.month - 12;
-                    struct_Next_Time.year = struct_Next_Time.year + 1;
+                    struct_Next_Time.year = year + 1;
                 } else {
                     struct_Next_Time.year = year;
                 }
-                struct_Next_Time.time = sunset_time + offset;
-                struct_Next_Time.day = next + period_weekdays;
                 return struct_Next_Time;
             }
         }
@@ -828,21 +864,28 @@ MyNode::NextTime MyNode::getNext() {
                     next = next + max_weekdays;
                 }
 
-                if (next > days_mmax) {
-                    next = days_mmax - next;
-                    struct_Next_Time.month = struct_Next_Time.month + 1;
-                } else {
-                    struct_Next_Time.month = current_month;
-                }
-                if (struct_Next_Time.month > 12) {
-                    struct_Next_Time.month = struct_Next_Time.month - 12;
-                    struct_Next_Time.year = struct_Next_Time.year + 1;
-                } else {
-                    struct_Next_Time.year = year;
-                }
-
                 struct_Next_Time.time = day_start + timepoint_min;
                 struct_Next_Time.day = next + period_weekdays;
+                struct_Next_Time.month = month;
+
+                if (struct_Next_Time.day > days_mmax) {
+                    do {
+                        struct_Next_Time.day = struct_Next_Time.day - GetDaysMaxThisMonth(struct_Next_Time.month);
+
+                        struct_Next_Time.month = struct_Next_Time.month + 1;
+
+                        if (struct_Next_Time.month > 12) {
+                            struct_Next_Time.month = struct_Next_Time.month - 12;
+                            struct_Next_Time.year = struct_Next_Time.year + 1;
+                        } else {
+                            struct_Next_Time.year = year;
+                        }
+
+                    } while (struct_Next_Time.day > GetDaysMaxThisMonth(struct_Next_Time.month));
+                } else {
+                    struct_Next_Time.month = _tm.tm_mon;
+                }
+
                 return struct_Next_Time;
             }
             if (day_start + timepoint_min > current_time) {
@@ -854,20 +897,29 @@ MyNode::NextTime MyNode::getNext() {
                     next = current_month_day + (next - current_weekday);
                 }
 
-                if (next > days_mmax) {
-                    next = days_mmax - next;
-                    struct_Next_Time.month = struct_Next_Time.month + 1;
-                } else {
-                    struct_Next_Time.month = current_month;
-                }
-                if (struct_Next_Time.month > 12) {
-                    struct_Next_Time.month = struct_Next_Time.month - 12;
-                    struct_Next_Time.year = struct_Next_Time.year + 1;
-                } else {
-                    struct_Next_Time.year = year;
-                }
                 struct_Next_Time.time = day_start + timepoint_min;
                 struct_Next_Time.day = next + period_weekdays;
+                struct_Next_Time.month = month;
+
+                if (struct_Next_Time.day > days_mmax) {
+                    do {
+                        struct_Next_Time.day = struct_Next_Time.day - GetDaysMaxThisMonth(struct_Next_Time.month);
+                        struct_Next_Time.month = struct_Next_Time.month + 1;
+
+                        if (struct_Next_Time.month > 12) {
+                            struct_Next_Time.month = struct_Next_Time.month - 12;
+                            struct_Next_Time.year = struct_Next_Time.year + 1;
+                        } else {
+                            struct_Next_Time.year = year;
+                        }
+
+                    } while (struct_Next_Time.day > GetDaysMaxThisMonth(struct_Next_Time.month));
+                } else {
+                    struct_Next_Time.month = _tm.tm_mon;
+                }
+
+                _out->printError("struct_Next_Time.day " + std::to_string(struct_Next_Time.day));
+                _out->printError("struct_Next_Time.month " + std::to_string(struct_Next_Time.month));
                 return struct_Next_Time;
             }
         }
@@ -1400,10 +1452,8 @@ int MyNode::SearchForHigherNumber(std::vector<int32_t> &days, int day_max, int n
 }
 
 int MyNode::GetDaysMaxCurrentMonth() {
-    std::tm tm{};
-    _sunTime.getTimeStruct(tm);
-    int month = tm.tm_mon + 1;
-    int year = (tm.tm_year - 100) + 2000;
+    int month = _tm.tm_mon;
+    int year = _tm.tm_year;
     bool gap_year;
     int days_mmax = 0;
 
@@ -1430,9 +1480,7 @@ int MyNode::GetDaysMaxCurrentMonth() {
 }
 
 int MyNode::GetDaysMaxThisMonth(int month) {
-    std::tm tm{};
-    _sunTime.getTimeStruct(tm);
-    int year = (tm.tm_year - 100) + 2000;
+    int year = _tm.tm_year;
     bool gap_year;
     int days_mmax = 0;
 
@@ -1534,6 +1582,7 @@ void MyNode::timer() {
 
     auto next_time = getNext();
     printNext(next_time);
+    auto test = next_time;
     bool update = false;
     _lastTime = 86341;
 
@@ -1545,12 +1594,19 @@ void MyNode::timer() {
                 break;
             }
 
-            current_time = _sunTime.getLocalTime(_simulated_time);
-            _current_time = current_time;
+            if (_simulated_time != 0){
+                _current_time = _simTime.getSimulatedTime(_simulated_time);
+            }else{
+                _current_time = _sunTime.getLocalTime();
+            }
+            _sunTime.getTimeStruct(_tm,_current_time);
+
+
+            current_time = _current_time;
             current_time = current_time / 1000;
             current_time = current_time % 86400;
-            _out->printError("_current_time " + std::to_string(_current_time));
-            _sunTime.getTimeStruct(_tm,_current_time);
+
+
             _tm.tm_year = _tm.tm_year + 1900;
             _tm.tm_mon = _tm.tm_mon + 1;
 
@@ -1572,6 +1628,14 @@ void MyNode::timer() {
             month_next = next_time.month;
             year_next = next_time.year;
 
+            test.time = current_time;
+            int32_t hours_curr = test.time / 3600;
+            test.time = test.time % 3600;
+            int32_t minutes_curr = test.time / 60;
+            int32_t seconds_curr = test.time % 60;
+
+
+
             _out->printError("time_next " + std::to_string(time_next));
             _out->printError("current_time " + std::to_string(current_time));
             _out->printError("day_next " + std::to_string(day_next));
@@ -1581,6 +1645,9 @@ void MyNode::timer() {
             _out->printError("current_year " + std::to_string(current_year));
             _out->printError("year_next " + std::to_string(year_next));
             _out->printError("_lastTime " + std::to_string(_lastTime));
+            _out->printError("hours_curr " + std::to_string(hours_curr));
+            _out->printError("minutes_curr " + std::to_string(minutes_curr));
+            _out->printError("_sunTime.getLocalTime() " + std::to_string(_sunTime.getLocalTime(_simulated_time)));
             _out->printError("---------------------------------------");
 
             //auto sim_time = _sunTime.getLocalTime(1614348261);

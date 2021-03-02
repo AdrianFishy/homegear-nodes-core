@@ -134,7 +134,7 @@
             trigger: {value: "sunrise"},
             startoff: {value:"0", validate:RED.validators.number() },
             timepoint: {value: "", validate:RED.validators.regex(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/)},
-            period: {value: "1", validate:RED.validators.number(), required: true},
+            period: {value: "1", validate:RED.validators.number()},
             daysdaily: {value: "everyday"},
             simulatedTime: {value:""},
             sun: {value:true},
@@ -262,24 +262,28 @@
                     $("#node-input-daysnumber-container").hide();
                     $("#node-input-weekdays-container").hide();
                     $("#node-input-months-container").hide();
+                    $("#node-input-period-container").show();
 
                 } else if(typeselect === "weekly") {
                     $("#node-input-daysdaily-container").hide();
                     $("#node-input-daysnumber-container").hide();
                     $("#node-input-weekdays-container").show();
                     $("#node-input-months-container").hide();
+                    $("#node-input-period-container").show();
 
                 } else if(typeselect === "monthly") {
                     $("#node-input-daysdaily-container").hide();
                     $("#node-input-daysnumber-container").show();
                     $("#node-input-weekdays-container").hide();
                     $("#node-input-months-container").hide();
+                    $("#node-input-period-container").show();
 
                 } else if(typeselect === "yearly") {
                     $("#node-input-daysdaily-container").hide();
                     $("#node-input-daysnumber-container").show();
                     $("#node-input-weekdays-container").hide();
                     $("#node-input-months-container").show();
+                    $("#node-input-period-container").show();
                 }
             }
 
