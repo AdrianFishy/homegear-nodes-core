@@ -35,7 +35,7 @@ rate_limiter_la_LDFLAGS =-module -avoid-version -shared
 timer_la_SOURCES = timer/Factory.cpp timer/MyNode.cpp timer/SunTime.cpp
 timer_la_LDFLAGS =-module -avoid-version -shared
 
-timer2_la_SOURCES = timer2/Factory.cpp timer2/MyNode.cpp timer2/SunTime.cpp timer2/SimulateTime.cpp
+timer2_la_SOURCES = timer2/Factory.cpp timer2/MyNode.cpp timer2/SunTime.cpp timer2/TimerInterface.cpp timer2/TimerInterfaceFactory.cpp
 timer2_la_LDFLAGS =-module -avoid-version -shared
 
 slow_pwm_la_SOURCES = slow-pwm/Factory.cpp slow-pwm/MyNode.cpp

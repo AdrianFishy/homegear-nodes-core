@@ -297,8 +297,10 @@ set(SOURCE_FILES
 		variable/variable-out/Factory.h
 		variable/variable-out/MyNode.cpp
 		variable/variable-out/MyNode.h
-		timers/timer2/SimulateTime.cpp
-		timers/timer2/SimulateTime.h)
+		timers/timer2/TimerInterface.h
+		timers/timer2/TimerInterface.cpp
+        timers/timer2/TimerInterfaceFactory.h
+		timers/timer2/TimerInterfaceFactory.cpp)
 
 add_custom_target(homegear COMMAND ../../devscripts/makeAll.sh SOURCES ${SOURCE_FILES})
 

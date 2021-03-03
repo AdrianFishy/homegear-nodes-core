@@ -31,10 +31,10 @@
 #define MYNODE_H_
 
 #include "SunTime.h"
-#include "SimulateTime.h"
 #include <homegear-node/INode.h>
 #include <thread>
 #include <mutex>
+#include "TimerInterfaceFactory.h"
 
 
 namespace Timer2 {
@@ -53,8 +53,8 @@ class MyNode : public Flows::INode {
 
 
  private:
+  TimeInterface* Time_Provider;
   SunTime _sunTime;
-  SimulateTime _simTime;
   std::atomic_bool _enabled{true};
   bool _outputOnStartUp = false;
   std::mutex _timeVariableMutex;
@@ -83,6 +83,7 @@ class MyNode : public Flows::INode {
   std::vector<bool> _months;
   std::vector<bool> _days;
   int64_t _current_time = 0;
+  int64_t _time_key = 0;
 
  private:
   std::tm _tm{};

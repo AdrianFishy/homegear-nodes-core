@@ -10,11 +10,12 @@
     </div>
     <div class="form-row">
         <label style="width: 130px" for="node-input-lat"><i class="fa fa-globe"></i> <span data-i18n="timer2.label.latitude"></span></label>
-        <input style="width:20%" type="text" id="node-input-lat" placeholder="54.32">
+        <input style="width:20%" type="text" id="node-input-lat" placeholder="54.32"> ±°
+
     </div>
     <div class="form-row">
         <label style="width: 130px; margin-lef="10px" for="node-input-lon"><i class="fa fa-globe"></i> <span data-i18n="timer2.label.longitude"></span></label>
-        <input style="width:20%" type="text" id="node-input-lon" placeholder="10.13">
+        <input style="width:20%" type="text" id="node-input-lon" placeholder="10.13"> ±°
     </div>
     <div class="form-row">
         <label style="width: 130px;" for="node-input-typeSelect"><i class="fa fa-random"></i> <span data-i18n="timer2.label.type"></span></label>
@@ -25,16 +26,16 @@
         <select type="text" id="node-input-trigger" class="node-input-select2-nosearch" style="display: inline-block; width: 65%;"></select>
     </div>
     <div class="form-row hide" id="node-input-startoff-container">
-        <label  style="width: 130px" for="node-input-startoff"><i class="fa fa-clock-o"></i> <span data-i18n="timer2.label.onoffset"></span> (Min.)</label>
-        <input  style="width: 65%" type="text" id="node-input-startoff" placeholder="0">
+        <label  style="width: 130px" for="node-input-startoff"><i class="fa fa-clock-o"></i> <span data-i18n="timer2.label.onoffset"></span></label>
+        <input  style="width: 20%" type="text" id="node-input-startoff" placeholder="0"> min.
     </div>
     <div class="form-row hide" id="node-input-timepoint-container">
         <label  style="width: 130px" for="node-input-timepoint"><i class="fa fa-clock-o"></i> <span data-i18n="timer2.label.timepoint"></span></label>
-        <input  style="width: 65%" type="text" id="node-input-timepoint" placeholder="hh:mm">
+        <input  style="width: 20%" type="text" id="node-input-timepoint" placeholder="hh:mm"> hh:mm
     </div>
     <div class="form-row hide" id="node-input-period-container">
-        <label  style="width: 130px" for="node-input-period"><i class="fa fa-clock-o"></i> <span data-i18n="timer2.label.period"></span></label>
-        <input  style="width: 65%" type="text" id="node-input-period" placeholder="1">
+        <label  style="width: 130px" for="node-input-period"><i class="fa fa-clock-o"></i><span id="periodlabel" data-i18n="timer2.label.perioddaymonth"></span></label>
+        <input  style="width: 20%" type="text" id="node-input-period" placeholder="1"><span id="periodtypelabel" data-i18n="timer2.label.dayperiod"></span>
     </div>
     <div class="form-row hide" id="node-input-daysdaily-container">
         <label style="width: 130px;" for="node-input-daysdaily"><i class="fa fa-random"></i> <span data-i18n="timer2.label.days"></span></label>
@@ -262,7 +263,10 @@
                     $("#node-input-daysnumber-container").hide();
                     $("#node-input-weekdays-container").hide();
                     $("#node-input-months-container").hide();
-                    $("#node-input-period-container").show();
+                    $("#periodlabel").empty();
+                    $("#periodlabel").append().text(RED._("timers/timer2:timer2.label.perioddaymonth"));
+                    $("#periodtypelabel").empty();
+                    $("#periodtypelabel").append().text(RED._("timers/timer2:timer2.label.dayperiod"));
 
                 } else if(typeselect === "weekly") {
                     $("#node-input-daysdaily-container").hide();
@@ -270,6 +274,10 @@
                     $("#node-input-weekdays-container").show();
                     $("#node-input-months-container").hide();
                     $("#node-input-period-container").show();
+                    $("#periodlabel").empty();
+                    $("#periodlabel").append().text(RED._("timers/timer2:timer2.label.periodweek"));
+                    $("#periodtypelabel").empty();
+                    $("#periodtypelabel").append().text(RED._("timers/timer2:timer2.label.weekperiod"));
 
                 } else if(typeselect === "monthly") {
                     $("#node-input-daysdaily-container").hide();
@@ -277,6 +285,10 @@
                     $("#node-input-weekdays-container").hide();
                     $("#node-input-months-container").hide();
                     $("#node-input-period-container").show();
+                    $("#periodlabel").empty();
+                    $("#periodlabel").append().text(RED._("timers/timer2:timer2.label.perioddaymonth"));
+                    $("#periodtypelabel").empty();
+                    $("#periodtypelabel").append().text(RED._("timers/timer2:timer2.label.monthperiod"));
 
                 } else if(typeselect === "yearly") {
                     $("#node-input-daysdaily-container").hide();
@@ -284,6 +296,11 @@
                     $("#node-input-weekdays-container").hide();
                     $("#node-input-months-container").show();
                     $("#node-input-period-container").show();
+                    $("#periodlabel").empty();
+                    $("#periodlabel").append().text(RED._("timers/timer2:timer2.label.periodyear"));
+                    $("#periodtypelabel").empty();
+                    $("#periodtypelabel").append().text(RED._("timers/timer2:timer2.label.yearperiod"));
+
                 }
             }
 
