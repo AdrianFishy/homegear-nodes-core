@@ -72,7 +72,7 @@ class MyNode : public Flows::INode {
   int64_t _onOffset;
   std::string _timepoint;
   int64_t _period;
-  std::string _daysdaily;
+  std::string _daysDaily;
   int64_t _lastTime;
   std::mutex _timerMutex;
   std::atomic_bool _stopThread{true};
@@ -82,13 +82,11 @@ class MyNode : public Flows::INode {
   std::vector<bool> _weekdays;
   std::vector<bool> _months;
   std::vector<bool> _days;
-  int64_t _current_time = 0;
-  int64_t _time_key = 0;
+  int64_t _currentTime = 0;
+  int64_t _starttime = 0;
 
  private:
   std::tm _tm{};
-  time_t _simulated_time = 0;
-
   std::vector<std::string> splitAll(std::string string, char delimiter);
   void timer();
   int64_t getSunTime(int64_t timeStamp, const std::string& time);
@@ -96,14 +94,14 @@ class MyNode : public Flows::INode {
   void input(const Flows::PNodeInfo &info, uint32_t index, const Flows::PVariable &message) override;
   NextTime getNext();
   void printNext(NextTime next);
-  std::vector<int> BoolVectorToIntVector(std::vector<bool> boolVal);
-  int GetDaysMaxCurrentMonth();
-  int GetDaysMaxThisMonth(int month);
+  std::vector<int> boolVectorToIntVector(std::vector<bool> boolVal);
+  int getDaysMaxCurrentMonth();
+  int getDaysMaxThisMonth(int month);
   std::vector<int32_t> SplitStringToIntVector (std::string string_to_split);
-  int GetOffsetWeekday (int current_weekday, int next);
-  int SearchForHigherOrEqualNumber(std::vector<int32_t> &vectors, int day_max, int number, int valueForNoResult);
-  int SearchForSmallerNumber(std::vector<int32_t> &vectors, int day_max, int number, int valueForNoResult);
-  int SearchForHigherNumber(std::vector<int32_t> &vectors, int day_max, int number, int valueForNoResult);
+  int getOffsetWeekday (int currentWeekday, int next);
+  int searchForHigherOrEqualNumber(std::vector<int32_t> &vectors, int dayMax, int number, int valueForNoResult);
+  int searchForSmallerNumber(std::vector<int32_t> &vectors, int dayMax, int number, int valueForNoResult);
+  int searchForHigherNumber(std::vector<int32_t> &vectors, int dayMax, int number, int valueForNoResult);
 };
 
 }

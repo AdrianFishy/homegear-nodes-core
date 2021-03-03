@@ -6,10 +6,10 @@
 
 
 
-Timer2::TimeInterface *Timer2::TimerInterfaceFactory::getInstance(int64_t figureKey) {
+Timer2::TimeInterface *Timer2::TimerInterfaceFactory::getInstance(int64_t startTime) {
 
-    if (figureKey > 0) {
-        return new SimTime(figureKey, true);
+    if (startTime > 0) {
+        return new SimTime(startTime, true);
     } else {
         return new SysTime();
     }

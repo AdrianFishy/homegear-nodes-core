@@ -10,7 +10,7 @@ namespace Timer2 {
 class TimerInterfaceFactory {
  public:
 
-  static TimeInterface *getInstance(int64_t figureKey);
+  static TimeInterface *getInstance(int64_t startTime);
 
 };
 }

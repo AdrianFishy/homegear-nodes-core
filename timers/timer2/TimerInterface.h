@@ -10,34 +10,34 @@ namespace Timer2 {
 
 class TimeInterface {
  public:
-  TimeInterface(int64_t starttime);
+  TimeInterface(int64_t startTime);
   ~TimeInterface() = default;
-  virtual int64_t GetTime() = 0;
+  virtual int64_t getTime() = 0;
 
  private:
 
 
  protected:
-  int64_t _starttime;
+  int64_t _startTime;
 
 };
 
 class SimTime: public TimeInterface {
 
  public:
-  SimTime(int64_t starttime, bool init);
-  int64_t GetTime() override;
+  SimTime(int64_t startTime, bool init);
+  int64_t getTime() override;
 
  private:
   bool _init;
-  int64_t _last_time;
+  int64_t _lastTime;
 
 };
 
 class SysTime: public TimeInterface{
  public:
   SysTime();
-  int64_t GetTime() override;
+  int64_t getTime() override;
 
 };
 

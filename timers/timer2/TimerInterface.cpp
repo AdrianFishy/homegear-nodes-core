@@ -9,33 +9,33 @@ namespace Timer2 {
 
 SysTime::SysTime() : TimeInterface(0) {};
 
-SimTime::SimTime(int64_t starttime, bool init): TimeInterface(starttime), _init(init) {}
+SimTime::SimTime(int64_t startTime, bool init): TimeInterface(startTime), _init(init) {}
 
-TimeInterface::TimeInterface(int64_t starttime){
-    _starttime = starttime;
+TimeInterface::TimeInterface(int64_t startTime){
+    _startTime = startTime;
 }
 
-int64_t SimTime::GetTime() {
+int64_t SimTime::getTime() {
     time_t diff;
-    time_t start_time;
-    time_t time_since_start;
+    time_t startTime;
+    time_t timeSinceStart;
 
     if (_init) {
-        start_time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-        _last_time = start_time;
+        startTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+        _lastTime = startTime;
         _init = false;
     } else {
-        start_time = _last_time;
+        startTime = _lastTime;
     }
 
-    time_since_start = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    diff = time_since_start - start_time;
+    timeSinceStart = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    diff = timeSinceStart - startTime;
 
-    return diff + _starttime;
+    return diff + _startTime;
 
 }
 
-int64_t SysTime::GetTime() {
+int64_t SysTime::getTime() {
     time_t time;
     time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     return time;
