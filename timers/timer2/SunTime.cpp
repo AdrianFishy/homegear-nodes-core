@@ -97,7 +97,7 @@ void SunTime::getTimeStruct(std::tm &timeStruct, int64_t utcTime) {
         t = std::chrono::system_clock::to_time_t(timePoint);
     }
 
-    localtime_r(&t, &timeStruct);
+    gmtime_r(&t, &timeStruct);
 }
 
 //{{{ date/time constants and conversions

@@ -62,9 +62,11 @@ class MyNode : public Flows::INode {
   double _longitude = 10.13;
   struct NextTime{
      int64_t time;
-     int64_t day;
-     int64_t month;
+     int day;
+     int month;
      int year;
+     int period;
+     bool periodCheck;
   };
 
   std::string _type;
@@ -90,7 +92,6 @@ class MyNode : public Flows::INode {
   std::vector<std::string> splitAll(std::string string, char delimiter);
   void timer();
   int64_t getSunTime(int64_t timeStamp, const std::string& time);
-  int64_t getTime(int64_t currentTime, const std::string& time, const std::string& timeType, int64_t offset);
   void input(const Flows::PNodeInfo &info, uint32_t index, const Flows::PVariable &message) override;
   NextTime getNext();
   void printNext(NextTime next);
