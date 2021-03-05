@@ -37,6 +37,10 @@
         <label  style="width: 130px" for="node-input-period"><i class="fa fa-clock-o"></i><span id="periodlabel" data-i18n="timer2.label.perioddaymonth"></span></label>
         <input  style="width: 20%" type="text" id="node-input-period" placeholder="1"><span id="periodtypelabel" data-i18n="timer2.label.dayperiod"></span>
     </div>
+    <div class="form-row" id="node-input-starttime-container">
+        <label  style="width: 130px" for="node-input-starttime"><i class="fa fa-clock-o"></i><span " data-i18n="timer2.label.starttime"></span></label>
+        <input  style="width: 65%" type="text" id="node-input-starttime" placeholder="HH:MM:SS, DD.MM.YYYY">
+    </div>
     <div class="form-row hide" id="node-input-daysdaily-container">
         <label style="width: 130px;" for="node-input-daysdaily"><i class="fa fa-random"></i> <span data-i18n="timer2.label.days"></span></label>
         <select type="text" id="node-input-daysdaily" class="node-input-select2-nosearch" style="display: inline-block; width: 65%;"></select>
@@ -138,6 +142,7 @@
             period: {value: "1", validate:RED.validators.number()},
             daysdaily: {value: "everyday"},
             simulatedTime: {value:""},
+            starttime: {value:"HH:MM:SS, DD.MM.YYYY"},
             sun: {value:true},
             mon: {value:true},
             tue: {value:true},
@@ -233,8 +238,6 @@
             variableTypeSelect.append($("<option />").val("weekend").text(RED._("timers/timer2:timer2.label.weekend")));
             variableTypeSelect.val(node.daysdaily);
 
-
-
             $('.node-input-select2').select2();
             $('.node-input-select2-nosearch').select2({minimumResultsForSearch: Infinity});
 
@@ -325,10 +328,6 @@
             $("#node-input-typeSelect").change(function (){updateType()});
             $("#node-input-trigger").change(function (){updateOffsetTimepoint()});
             $("#node-input-daysdaily").change(function (){updateTypeDays()});
-
-
-
         }
-
     });
 </script>

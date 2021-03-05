@@ -235,7 +235,8 @@
       "createvariable": "Variable erstellen",
       "typeandvalue": "Wert",
       "create": "Erstellen",
-      "createnewvariable": "Neue Variable erstellen"
+      "createnewvariable": "Neue Variable erstellen",
+      "starttime": "Startzeit"
     },
     "input1Description": "<code>false</code> setzen um den Timer zu deaktivieren, und <code>true</ code>, um ihn erneut zu aktivieren. Standardmäßig ist der Timer aktiviert.",
     "input2Description": "<code>HH:MM:[SS]</code> setzen um die \"Einschaltzeit\" des Timers dynamisch einzustellen und den Wert aus dem Einstellungsdialog zu überschreiben.",

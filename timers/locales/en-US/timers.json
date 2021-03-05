@@ -237,7 +237,8 @@
       "createvariable": "Create variable",
       "typeandvalue": "Value",
       "create": "Create",
-      "createnewvariable": "Create new variable"
+      "createnewvariable": "Create new variable",
+      "starttime": "starttime"
     },
     "input1Description": "Set to <code>false</code> to disable the timer and to <code>true</code> to enable it again. By default the timer is enabled.",
     "input2Description": "Set to <code>HH:MM:[SS]</code> to dynamically set the timer's \"On time\" overwriting the value from the setting dialog.",
