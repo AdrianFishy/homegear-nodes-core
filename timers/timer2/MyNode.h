@@ -50,8 +50,6 @@ class MyNode : public Flows::INode {
   void stop() override;
   void waitForStop() override;
 
-
-
  private:
   TimeInterface* Time_Provider;
   SunTime _sunTime;
@@ -65,8 +63,6 @@ class MyNode : public Flows::INode {
      int day;
      int month;
      int year;
-     int period;
-     bool periodCheck;
   };
 
   std::string _type;
