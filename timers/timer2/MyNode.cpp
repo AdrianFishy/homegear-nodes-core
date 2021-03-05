@@ -348,14 +348,15 @@ MyNode::NextTime MyNode::getNext() {
     int64_t period = _period;
     std::string daysDaily = _daysDaily;
     int64_t currentTime = _currentTime;
-    int64_t inputTime = currentTime - 86400000;
+    int64_t inputTime = currentTime - ONE_DAY_IN_SECONDS;
     int64_t sunriseTime = getSunTime(currentTime, "sunrise");
     int64_t sunsetTime = getSunTime(currentTime, "sunset");
     int64_t timepointMin = 10;
+    int64_t triggertime;
 
     int month = _tm.tm_mon;
     int year = _tm.tm_year;
-    int64_t dayStart = currentTime - (currentTime % 86400000);
+    int64_t dayStart = currentTime - (currentTime % ONE_DAY_IN_SECONDS);
     int nextDay = 0;
     int weekdayOffset = 0;
     bool gapYear;
@@ -393,13 +394,11 @@ MyNode::NextTime MyNode::getNext() {
     }
 
     if (type == "daily") {
-
         if (daysDaily == "weekend") {
             if (_tm.tm_wday < 6) {
                 weekdayOffset = 6 - _tm.tm_wday;
                 period = 0;
             }
-
         }
         if (daysDaily == "workday") {
             if (_tm.tm_wday >= 6) {
@@ -412,7 +411,6 @@ MyNode::NextTime MyNode::getNext() {
                 nextDay = 0;
             }
         }
-
         if (daysDaily == "everyday") {
             if (currentTime >= sunriseTime + offset) {
                 nextDay = 1;
@@ -422,185 +420,64 @@ MyNode::NextTime MyNode::getNext() {
         }
 
         if (triggerType == 0) {
-            if (currentTime >= sunriseTime + offset) {
-
-                if (daysDaily == "everyday") {
-                    if (currentTime >= sunriseTime + offset && period == 0) {
-                        nextDay = 1;
-                    } else {
-                        nextDay = 0;
-                    }
-                }
-
-                structNextTime.time = sunriseTime + offset + (weekdayOffset * 86400000) + (period * 86400000) + nextDay * 86400000;
-                structNextTime.day = _tm.tm_mday + weekdayOffset + period + nextDay;
-                structNextTime.month = month;
-                structNextTime.year = year;
-
-                if (structNextTime.day > daysMonthMax) {
-
-                    do {
-                        structNextTime.day = structNextTime.day - getDaysMaxThisMonth(structNextTime.month);
-
-                        structNextTime.month = structNextTime.month + 1;
-
-                        if (structNextTime.month > 12) {
-                            structNextTime.month = structNextTime.month - 12;
-                            structNextTime.year = year + 1;
-                        }
-
-                    } while (structNextTime.day > getDaysMaxThisMonth(structNextTime.month));
-                } else {
-                    structNextTime.month = _tm.tm_mon;
-                }
-
-                return structNextTime;
-            }
-            if (sunriseTime + offset > currentTime) {
-                structNextTime.time = sunriseTime + offset + (weekdayOffset * 86400000) + (period * 86400000);
-                structNextTime.day = _tm.tm_mday + weekdayOffset + period;
-                structNextTime.month = month;
-                structNextTime.year = year;
-
-                if (structNextTime.day > daysMonthMax) {
-                    do {
-                        structNextTime.day = structNextTime.day - getDaysMaxThisMonth(structNextTime.month);
-                        structNextTime.month = structNextTime.month + 1;
-
-                        if (structNextTime.month > 12) {
-                            structNextTime.month = structNextTime.month - 12;
-                            structNextTime.year = year + 1;
-                        }
-
-                    } while (structNextTime.day > getDaysMaxThisMonth(structNextTime.month));
-                } else {
-                    structNextTime.month = _tm.tm_mon;
-                }
-
-                return structNextTime;
-            }
+            triggertime = sunriseTime + offset;
+        }
+        else if(triggerType == 1) {
+            triggertime = sunsetTime + offset;
+        }
+        else if(triggerType == 2) {
+            triggertime = dayStart + timepointMin;
         }
 
-        if (triggerType == 1) {
-            if (currentTime >= sunsetTime + offset) {
-
-                if (daysDaily == "everyday") {
-                    if (currentTime >= sunsetTime + offset && period == 0) {
-                        nextDay = 1;
-                    } else {
-                        nextDay = 0;
+        if (currentTime >= triggertime) {
+            if (daysDaily == "everyday") {
+                if (currentTime >= triggertime && period == 0) {
+                    nextDay = 1;
+                } else {
+                    nextDay = 0;
+                }
+            }
+            structNextTime.time = triggertime + (weekdayOffset * ONE_DAY_IN_SECONDS) + (period * ONE_DAY_IN_SECONDS) + nextDay * ONE_DAY_IN_SECONDS;
+            structNextTime.day = _tm.tm_mday + weekdayOffset + period + nextDay;
+            structNextTime.month = month;
+            structNextTime.year = year;
+            if (structNextTime.day > daysMonthMax) {
+                do {
+                    structNextTime.day = structNextTime.day - getDaysMaxThisMonth(structNextTime.month);
+                    structNextTime.month = structNextTime.month + 1;
+                    if (structNextTime.month > 12) {
+                        structNextTime.month = structNextTime.month - 12;
+                        structNextTime.year = year + 1;
                     }
-                }
-
-                structNextTime.time = sunsetTime + offset + (weekdayOffset * 86400000) + (period * 86400000) + nextDay * 86400000;
-                structNextTime.day = _tm.tm_mday + weekdayOffset + period + nextDay;
-                structNextTime.month = month;
-                structNextTime.year = year;
-
-                if (structNextTime.day > daysMonthMax) {
-
-                    do {
-                        structNextTime.day = structNextTime.day - getDaysMaxThisMonth(structNextTime.month);
-
-                        structNextTime.month = structNextTime.month + 1;
-
-                        if (structNextTime.month > 12) {
-                            structNextTime.month = structNextTime.month - 12;
-                            structNextTime.year = year + 1;
-                        }
-
-                    } while (structNextTime.day > getDaysMaxThisMonth(structNextTime.month));
-                } else {
-                    structNextTime.month = _tm.tm_mon;
-                }
-
-                return structNextTime;
-            }
-            if (sunsetTime + offset > currentTime) {
-                structNextTime.time = sunsetTime + offset + (weekdayOffset * 86400000) + (period * 86400000);
-                structNextTime.day = _tm.tm_mday + weekdayOffset + period;
-                structNextTime.month = month;
-                structNextTime.year = year;
-
-                if (structNextTime.day > daysMonthMax) {
-                    do {
-                        structNextTime.day = structNextTime.day - getDaysMaxThisMonth(structNextTime.month);
-                        structNextTime.month = structNextTime.month + 1;
-
-                        if (structNextTime.month > 12) {
-                            structNextTime.month = structNextTime.month - 12;
-                            structNextTime.year = year + 1;
-                        }
-
-                    } while (structNextTime.day > getDaysMaxThisMonth(structNextTime.month));
-                } else {
-                    structNextTime.month = _tm.tm_mon;
-                }
-
-                return structNextTime;
+                } while (structNextTime.day > getDaysMaxThisMonth(structNextTime.month));
+            } else {
+                structNextTime.month = _tm.tm_mon;
             }
 
+            return structNextTime;
         }
-        if (triggerType == 2) {
-            if (currentTime >= dayStart + timepointMin) {
+        if (triggertime > currentTime) {
+            structNextTime.time = triggertime + (weekdayOffset * ONE_DAY_IN_SECONDS) + (period * ONE_DAY_IN_SECONDS);
+            structNextTime.day = _tm.tm_mday + weekdayOffset + period;
+            structNextTime.month = month;
+            structNextTime.year = year;
 
-                if (daysDaily == "everyday") {
-                    if (currentTime >= dayStart + timepointMin && period == 0) {
-                        nextDay = 1;
-                    } else {
-                        nextDay = 0;
+            if (structNextTime.day > daysMonthMax) {
+                do {
+                    structNextTime.day = structNextTime.day - getDaysMaxThisMonth(structNextTime.month);
+                    structNextTime.month = structNextTime.month + 1;
+
+                    if (structNextTime.month > 12) {
+                        structNextTime.month = structNextTime.month - 12;
+                        structNextTime.year = year + 1;
                     }
-                }
 
-                structNextTime.time = dayStart + timepointMin + (weekdayOffset * 86400000) + (period * 86400000) + nextDay * 86400000;
-                structNextTime.day = _tm.tm_mday + weekdayOffset + period + nextDay;
-                structNextTime.month = month;
-                structNextTime.year = year;
-
-                if (structNextTime.day > daysMonthMax) {
-                    do {
-                        structNextTime.day = structNextTime.day - getDaysMaxThisMonth(structNextTime.month);
-                        structNextTime.month = structNextTime.month + 1;
-
-                        if (structNextTime.month > 12) {
-                            structNextTime.month = structNextTime.month - 12;
-                            structNextTime.year = year + 1;
-                        }
-
-                    } while (structNextTime.day > getDaysMaxThisMonth(structNextTime.month));
-                } else {
-                    structNextTime.month = _tm.tm_mon;
-                }
-
-                return structNextTime;
+                } while (structNextTime.day > getDaysMaxThisMonth(structNextTime.month));
+            } else {
+                structNextTime.month = _tm.tm_mon;
             }
-            if (dayStart + timepointMin > currentTime) {
-
-                structNextTime.time = dayStart + timepointMin + (weekdayOffset * 86400000) + (period * 86400000);
-                structNextTime.day = _tm.tm_mday + weekdayOffset + period;
-                structNextTime.month = month;
-                structNextTime.year = year;
-
-                if (structNextTime.day > daysMonthMax) {
-                    do {
-                        structNextTime.day = structNextTime.day - getDaysMaxThisMonth(structNextTime.month);
-                        structNextTime.month = structNextTime.month + 1;
-
-                        if (structNextTime.month > 12) {
-                            structNextTime.month = structNextTime.month - 12;
-                            structNextTime.year = year + 1;
-                        }
-
-                    } while (structNextTime.day > getDaysMaxThisMonth(structNextTime.month));
-                } else {
-                    structNextTime.month = _tm.tm_mon;
-                }
-
-                return structNextTime;
-            }
-
+            return structNextTime;
         }
-
     }
     if (type == "weekly") {
         int next = 0;
@@ -975,7 +852,7 @@ MyNode::NextTime MyNode::getNext() {
             }
         }
         if (triggerType == 1) {
-
+            
             if (currentTime >= sunsetTime + offset) {
 
                 if (next < currentMonthday) {

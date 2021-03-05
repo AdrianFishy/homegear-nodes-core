@@ -51,6 +51,7 @@ class MyNode : public Flows::INode {
   void waitForStop() override;
 
  private:
+  static constexpr uint32_t ONE_DAY_IN_SECONDS = 86400000;
   TimeInterface* Time_Provider;
   SunTime _sunTime;
   std::atomic_bool _enabled{true};
