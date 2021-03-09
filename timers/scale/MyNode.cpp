@@ -167,35 +167,6 @@ void MyNode::waitForStop() {
 
 void MyNode::timer() {
 
-
-    if (_intOrDouble) {
-        double erg = scaleDouble(_value, _valueMin, _valueMax, _scaleMin, _scaleMax);
-
-        Flows::PVariable status = std::make_shared<Flows::Variable>(Flows::VariableType::tStruct);
-        status->structValue->emplace("text", std::make_shared<Flows::Variable>("Ergebnis: " + std::to_string(erg)));
-        nodeEvent("statusBottom/" + _id, status, true);
-        _lastValue = _value;
-        _out->printError("erg11 " + std::to_string(erg));
-
-        setNodeData("value", std::make_shared<Flows::Variable>(erg));
-        Flows::PVariable message = std::make_shared<Flows::Variable>(Flows::VariableType::tStruct);
-        message->structValue->emplace("payload", std::make_shared<Flows::Variable>(erg));
-        output(0, message);
-    }else{
-        int erg = scaleInt(_value, _valueMin, _valueMax, _scaleMin, _scaleMax);
-
-        Flows::PVariable status = std::make_shared<Flows::Variable>(Flows::VariableType::tStruct);
-        status->structValue->emplace("text", std::make_shared<Flows::Variable>("Ergebnis: " + std::to_string(erg)));
-        nodeEvent("statusBottom/" + _id, status, true);
-        _lastValue = _value;
-        _out->printError("erg12 " + std::to_string(erg));
-
-        setNodeData("value", std::make_shared<Flows::Variable>(erg));
-        Flows::PVariable message = std::make_shared<Flows::Variable>(Flows::VariableType::tStruct);
-        message->structValue->emplace("payload", std::make_shared<Flows::Variable>(erg));
-        output(0, message);
-    }
-
     while (!_stopThread) {
         try {
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
@@ -213,7 +184,7 @@ void MyNode::timer() {
                     _lastValue = _value;
                     _out->printError("erg21 " + std::to_string(erg));
 
-                    setNodeData("value", std::make_shared<Flows::Variable>(erg));
+
                     Flows::PVariable message = std::make_shared<Flows::Variable>(Flows::VariableType::tStruct);
                     message->structValue->emplace("payload", std::make_shared<Flows::Variable>(erg));
                     output(0, message);
@@ -227,7 +198,7 @@ void MyNode::timer() {
                     _lastValue = _value;
                     _out->printError("erg22 " + std::to_string(erg));
 
-                    setNodeData("value", std::make_shared<Flows::Variable>(erg));
+
                     Flows::PVariable message = std::make_shared<Flows::Variable>(Flows::VariableType::tStruct);
                     message->structValue->emplace("payload", std::make_shared<Flows::Variable>(erg));
                     output(0, message);
@@ -268,32 +239,6 @@ void MyNode::input(const Flows::PNodeInfo &info, uint32_t index, const Flows::PV
         if (index == 1 && !_manualInput)
         {
             _value = message->structValue->at("payload")->floatValue;
-            setNodeData("value", std::make_shared<Flows::Variable>(_value));
-
-        }
-        if (index == 2 && !_manualInput)
-        {
-            _valueMin = message->structValue->at("payload")->floatValue;
-            setNodeData("valueMin", std::make_shared<Flows::Variable>(_valueMin));
-
-        }
-        if (index == 3 && !_manualInput)
-        {
-            _valueMax = message->structValue->at("payload")->floatValue;
-            setNodeData("valueMax", std::make_shared<Flows::Variable>(_valueMax));
-
-        }
-        if (index == 4 && !_manualInput)
-        {
-            _scaleMin = message->structValue->at("payload")->floatValue;
-            setNodeData("scaleMin", std::make_shared<Flows::Variable>(_scaleMin));
-
-        }
-        if (index == 5 && !_manualInput)
-        {
-            _scaleMax = message->structValue->at("payload")->floatValue;
-            setNodeData("scaleMax", std::make_shared<Flows::Variable>(_scaleMax));
-
         }
 
     }

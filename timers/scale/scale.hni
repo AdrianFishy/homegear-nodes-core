@@ -18,19 +18,19 @@
     </div>
     <div class="form-row">
         <label style="width: 130px;" for="node-input-valueMin"><i class="fa fa-random"></i> <span data-i18n="scale.label.valueMin"></span></label>
-        <input type="text" id="node-input-valueMin" disabled="enabled" style="display: inline-block; width: 65%;"></select>
+        <input type="text" id="node-input-valueMin" style="display: inline-block; width: 65%;"></select>
     </div>
     <div class="form-row">
         <label style="width: 130px;" for="node-input-valueMax"><i class="fa fa-random"></i> <span data-i18n="scale.label.valueMax"></span></label>
-        <input type="text" id="node-input-valueMax" disabled="enabled" style="display: inline-block; width: 65%;"></select>
+        <input type="text" id="node-input-valueMax" style="display: inline-block; width: 65%;"></select>
     </div>
     <div class="form-row">
         <label style="width: 130px;" for="node-input-scaleMin"><i class="fa fa-random"></i> <span data-i18n="scale.label.scaleMin"></span></label>
-        <input type="text" id="node-input-scaleMin" disabled="enabled" style="display: inline-block; width: 65%;"></select>
+        <input type="text" id="node-input-scaleMin" style="display: inline-block; width: 65%;"></select>
     </div>
     <div class="form-row">
         <label style="width: 130px;" for="node-input-scaleMax"><i class="fa fa-random"></i> <span data-i18n="scale.label.scaleMax"></span></label>
-        <input type="text" id="node-input-scaleMax" disabled="enabled" style="display: inline-block; width: 65%;"></select>
+        <input type="text" id="node-input-scaleMax" style="display: inline-block; width: 65%;"></select>
     </div>
     <div class="form-row">
         <input type="checkbox" id="node-input-intOrDouble" style="display: inline-block; width: auto; vertical-align: top;">
@@ -57,7 +57,7 @@
             manualInput: {value:false},
 
         },
-        inputs:6,
+        inputs:2,
         inputInfo: [
             {
                 label: "EN",
@@ -67,41 +67,24 @@
                 label: "value",
                 types: ["float"]
             },
-            {
-                label: "valueMin",
-                types: ["float"]
-            },
-            {
-                label: "valueMax",
-                types: ["float"]
-            },
-            {
-                label: "scaleMin",
-                types: ["float"]
-            },
-            {
-                label: "scaleMax",
-                types: ["float"]
-            },
+
         ],
         outputs:1,
         icon: "serial.svg",
         label: function() {
-            if(this.name) return this.name;
             return "scale";
         },
         oneditprepare: function() {
             var node = this;
 
-            $("#node-input-manualInput").click(function() {
+            var checkbox = document.querySelector("#node-input-manualInput");
+            var input = document.querySelector("#node-input-value");
+            var toogleInput = function(e){
+                input.disabled = !e.target.checked;
+            };
+            toogleInput({target: checkbox});
 
-                $('#node-input-value').attr('disabled',! this.checked)
-                $('#node-input-valueMin').attr('disabled',! this.checked)
-                $('#node-input-valueMax').attr('disabled',! this.checked)
-                $('#node-input-scaleMin').attr('disabled',! this.checked)
-                $('#node-input-scaleMax').attr('disabled',! this.checked)
-
-            });
+            checkbox.addEventListener("change", toogleInput);
 
         }
 
