@@ -6,7 +6,7 @@ LIBS += -Wl,-Bdynamic -lhomegear-node
 
 libdir = $(localstatedir)/lib/homegear/node-blue/nodes/timers
 
-lib_LTLIBRARIES = clock.la delay.la impulse.la interval.la off-delay.la on-delay.la ramp-to.la rate-limiter.la timer.la timer2.la slow-pwm.la sun-position.la weekly-program.la
+lib_LTLIBRARIES = clock.la delay.la impulse.la interval.la off-delay.la on-delay.la ramp-to.la rate-limiter.la timer.la timer2.la scale.la slow-pwm.la sun-position.la weekly-program.la
 
 clock_la_SOURCES = clock/Factory.cpp clock/MyNode.cpp
 clock_la_LDFLAGS =-module -avoid-version -shared
@@ -38,6 +38,9 @@ timer_la_LDFLAGS =-module -avoid-version -shared
 timer2_la_SOURCES = timer2/Factory.cpp timer2/MyNode.cpp timer2/SunTime.cpp timer2/TimerInterface.cpp timer2/TimerInterfaceFactory.cpp
 timer2_la_LDFLAGS =-module -avoid-version -shared
 
+scale_la_SOURCES = scale/Factory.cpp scale/MyNode.cpp
+scale_la_LDFLAGS =-module -avoid-version -shared
+
 slow_pwm_la_SOURCES = slow-pwm/Factory.cpp slow-pwm/MyNode.cpp
 slow_pwm_la_LDFLAGS =-module -avoid-version -shared
 
@@ -48,7 +51,7 @@ weekly_program_la_SOURCES = weekly-program/Factory.cpp weekly-program/MyNode.cpp
 weekly_program_la_LDFLAGS =-module -avoid-version -shared
 
 timers_ladir = $(libdir)
-timers_la_DATA = package.json clock/clock.hni delay/delay.hni impulse/impulse.hni interval/interval.hni off-delay/off-delay.hni on-delay/on-delay.hni ramp-to/ramp-to.hni rate-limiter/rate-limiter.hni timer/timer.hni timer2/timer2.hni slow-pwm/slow-pwm.hni sun-position/sun-position.hni weekly-program/weekly-program.hni
+timers_la_DATA = package.json clock/clock.hni delay/delay.hni impulse/impulse.hni interval/interval.hni off-delay/off-delay.hni on-delay/on-delay.hni ramp-to/ramp-to.hni rate-limiter/rate-limiter.hni timer/timer.hni scale/scale.hni timer2/timer2.hni slow-pwm/slow-pwm.hni sun-position/sun-position.hni weekly-program/weekly-program.hni
 
 locale_endir = $(libdir)/locales/en
 locale_en_DATA = locales/en-US/timers.json
@@ -73,6 +76,7 @@ install-exec-hook:
 	rm -f $(DESTDIR)$(libdir)/rate-limiter.la
 	rm -f $(DESTDIR)$(libdir)/timer.la
 	rm -f $(DESTDIR)$(libdir)/timer2.la
+	rm -f $(DESTDIR)$(libdir)/scale.la
 	rm -f $(DESTDIR)$(libdir)/slow-pwm.la
 	rm -f $(DESTDIR)$(libdir)/sun-position.la
 	rm -f $(DESTDIR)$(libdir)/weekly-program.la

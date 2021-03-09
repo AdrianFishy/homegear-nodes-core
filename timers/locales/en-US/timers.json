@@ -237,7 +237,8 @@
       "createvariable": "Create variable",
       "typeandvalue": "Value",
       "create": "Create",
-      "createnewvariable": "Create new variable"
+      "createnewvariable": "Create new variable",
+      "starttime": "starttime"
     },
     "input1Description": "Set to <code>false</code> to disable the timer and to <code>true</code> to enable it again. By default the timer is enabled.",
     "input2Description": "Set to <code>HH:MM:[SS]</code> to dynamically set the timer's \"On time\" overwriting the value from the setting dialog.",
@@ -259,6 +260,22 @@
       "time": "Time",
       "value": "Value",
       "asprevious": "Copy from previous day"
+    },
+    "input1Description": "Set to <code>false</code> to disable the node and to <code>true</code> to enable it again. By default the node is enabled.",
+    "paletteHelp": "<p>Generates events at specific time points.</p>",
+    "help": "<p>This node generates events at specific time points.</p>"
+  },
+  "scale": {
+    "label": {
+      "name": "Name",
+      "startup": "Output state on start up",
+      "value": "Value",
+      "valueMin": "Value min",
+      "valueMax": "Value max",
+      "scaleMin": "Scale min",
+      "scaleMax": "Scale max",
+      "intOrDouble": "Float Value",
+      "manualInput": "Manuall Input"
     },
     "input1Description": "Set to <code>false</code> to disable the node and to <code>true</code> to enable it again. By default the node is enabled.",
     "paletteHelp": "<p>Generates events at specific time points.</p>",

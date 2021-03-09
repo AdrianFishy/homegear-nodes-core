@@ -235,7 +235,9 @@
       "createvariable": "Variable erstellen",
       "typeandvalue": "Wert",
       "create": "Erstellen",
-      "createnewvariable": "Neue Variable erstellen"
+      "createnewvariable": "Neue Variable erstellen",
+      "starttime": "Startzeit"
+
     },
     "input1Description": "<code>false</code> setzen um den Timer zu deaktivieren, und <code>true</ code>, um ihn erneut zu aktivieren. Standardmäßig ist der Timer aktiviert.",
     "input2Description": "<code>HH:MM:[SS]</code> setzen um die \"Einschaltzeit\" des Timers dynamisch einzustellen und den Wert aus dem Einstellungsdialog zu überschreiben.",
@@ -261,5 +263,22 @@
     "input1Description": "Auf <code>false</code> setzen, um den Knoten zu deaktivieren und auf <code>true</code>, um ihn wieder zu aktivieren. Standardmäßig ist der Knoten aktiviert.",
     "paletteHelp": "<p>Gibt vorgegebene Werte zu definierten Zeitpunkten aus.</p>",
     "help": "<p>Dieser Knoten gibt vorgegebene Werte zu definierten Zeitpunkten aus.</p>"
+  },
+
+  "scale": {
+    "label": {
+      "name": "Name",
+      "startup": "Aktuellen Wert beim Start ausgeben",
+      "value": "Wert",
+      "valueMin": "Wert min",
+      "valueMax": "Wert max",
+      "scaleMin": "Scale min",
+      "scaleMax": "Scale max",
+      "intOrDouble": "Gleitkomma Wert",
+      "manualInput": "Manuelle Werteingabe"
+    },
+    "input1Description": "Set to <code>false</code> to disable the node and to <code>true</code> to enable it again. By default the node is enabled.",
+    "paletteHelp": "<p>Generates events at specific time points.</p>",
+    "help": "<p>This node generates events at specific time points.</p>"
   }
 }

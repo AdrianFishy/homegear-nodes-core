@@ -30,14 +30,15 @@
 #ifndef MYNODE_H_
 #define MYNODE_H_
 
-#include "SunTime.h"
+
 #include <homegear-node/INode.h>
 #include <thread>
 #include <mutex>
-#include "TimerInterfaceFactory.h"
 
 
-namespace Timer2 {
+
+
+namespace scale {
 
 class MyNode : public Flows::INode {
  public:
@@ -51,55 +52,31 @@ class MyNode : public Flows::INode {
   void waitForStop() override;
 
  private:
-  TimeInterface* Time_Provider;
-  SunTime _sunTime;
+
   std::atomic_bool _enabled{true};
   bool _outputOnStartUp = false;
-  std::mutex _timeVariableMutex;
-  double _latitude = 54.32;
-  double _longitude = 10.13;
-  struct NextTime{
-     int64_t time;
-     int day;
-     int month;
-     int year;
-  };
 
-  std::string _type;
-  std::string _trigger;
-  int64_t _onOffset;
-  std::string _timepoint;
-  int64_t _period;
-  std::string _daysDaily;
-  int64_t _lastTime;
+
+
   std::mutex _timerMutex;
   std::atomic_bool _stopThread{true};
   std::atomic_bool _stopped{true};
   std::atomic_bool _forceUpdate{false};
   std::thread _timerThread;
-  std::vector<bool> _weekdays;
-  std::vector<bool> _months;
-  std::vector<bool> _days;
-  int64_t _currentTime = 0;
-  int64_t _starttime = 0;
-  std::string _starttimepoint;
+  double _value;
+  double _valueMin;
+  double _valueMax;
+  double _scaleMin;
+  double _scaleMax;
+  bool _intOrDouble;
+  bool _manualInput;
+  double _lastValue;
 
- private:
-  std::tm _tm{};
-  std::vector<std::string> splitAll(std::string string, char delimiter);
   void timer();
-  int64_t getSunTime(int64_t timeStamp, const std::string& time);
   void input(const Flows::PNodeInfo &info, uint32_t index, const Flows::PVariable &message) override;
-  NextTime getNext();
-  void printNext(NextTime next);
-  std::vector<int> boolVectorToIntVector(std::vector<bool> boolVal);
-  int getDaysMaxCurrentMonth();
-  int getDaysMaxThisMonth(int month);
-  std::vector<int32_t> SplitStringToIntVector (std::string string_to_split, int size, char delim);
-  int getOffsetWeekday (int currentWeekday, int next);
-  int searchForHigherOrEqualNumber(std::vector<int32_t> &vectors, int dayMax, int number, int valueForNoResult);
-  int searchForSmallerNumber(std::vector<int32_t> &vectors, int dayMax, int number, int valueForNoResult);
-  int searchForHigherNumber(std::vector<int32_t> &vectors, int dayMax, int number, int valueForNoResult);
+  int32_t scaleInt(int32_t value, int32_t valueMin, int32_t valueMax, int32_t scaleMin, int32_t scaleMax);
+  double scaleDouble(double value, double valueMin, double valueMax, double scaleMin, double scaleMax);
+
 };
 
 }

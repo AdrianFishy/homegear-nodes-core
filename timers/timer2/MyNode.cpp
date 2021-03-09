@@ -86,6 +86,10 @@ bool MyNode::init(const Flows::PNodeInfo &info) {
         if (settingsIterator != info->info->structValue->end())
             _daysDaily = settingsIterator->second->stringValue;
 
+        settingsIterator = info->info->structValue->find("starttime");
+        if (settingsIterator != info->info->structValue->end())
+            _starttimepoint = settingsIterator->second->stringValue;
+
         settingsIterator = info->info->structValue->find("simulatedTime");
         if (settingsIterator != info->info->structValue->end())
             _starttime = Flows::Math::getNumber64(settingsIterator->second->stringValue);
@@ -352,6 +356,16 @@ MyNode::NextTime MyNode::getNext() {
     int64_t sunriseTime = getSunTime(currentTime, "sunrise");
     int64_t sunsetTime = getSunTime(currentTime, "sunset");
     int64_t timepointMin = 10;
+    std::vector<int32_t> startTimepointVector = SplitStringToIntVector(_starttimepoint, 3,'.');
+    std::tm TimeStructInGetNext{};
+    TimeStructInGetNext = _tm;
+    _tm.tm_mday = startTimepointVector.at(0);
+    _tm.tm_mon = startTimepointVector.at(1);
+    _tm.tm_year = startTimepointVector.at(2);
+
+    _out->printError("currentYear " + std::to_string(_tm.tm_mday));
+    _out->printError("currentYear " + std::to_string(_tm.tm_mon));
+    _out->printError("currentYear " + std::to_string(_tm.tm_year));
 
     int month = _tm.tm_mon;
     int year = _tm.tm_year;
@@ -371,7 +385,7 @@ MyNode::NextTime MyNode::getNext() {
         triggerType = timepoint;
     }
 
-    std::vector<int32_t> timepoint_vector = SplitStringToIntVector(_timepoint);
+    std::vector<int32_t> timepoint_vector = SplitStringToIntVector(_timepoint,2,':');
 
     if (timepoint_vector.at(0) > 23 || timepoint_vector.at(1) > 59 || timepoint_vector.at(0) < 0 || timepoint_vector.at(1) < 0) {
         timepoint_vector.at(0) = 0;
@@ -421,7 +435,7 @@ MyNode::NextTime MyNode::getNext() {
             }
         }
 
-        if (triggerType == 0) {
+        if (triggerType == sunrise) {
             if (currentTime >= sunriseTime + offset) {
 
                 if (daysDaily == "everyday") {
@@ -481,7 +495,7 @@ MyNode::NextTime MyNode::getNext() {
             }
         }
 
-        if (triggerType == 1) {
+        if (triggerType == sunset) {
             if (currentTime >= sunsetTime + offset) {
 
                 if (daysDaily == "everyday") {
@@ -541,7 +555,7 @@ MyNode::NextTime MyNode::getNext() {
             }
 
         }
-        if (triggerType == 2) {
+        if (triggerType == timepoint) {
             if (currentTime >= dayStart + timepointMin) {
 
                 if (daysDaily == "everyday") {
@@ -553,7 +567,7 @@ MyNode::NextTime MyNode::getNext() {
                 }
 
                 structNextTime.time = dayStart + timepointMin + (weekdayOffset * 86400000) + (period * 86400000) + nextDay * 86400000;
-                structNextTime.day = _tm.tm_mday + weekdayOffset + period + nextDay;
+                structNextTime.day = _tm.tm_mday + weekdayOffset + period + nextDay + startTimepointVector.at(0);
                 structNextTime.month = month;
                 structNextTime.year = year;
 
@@ -633,7 +647,7 @@ MyNode::NextTime MyNode::getNext() {
             next = searchForSmallerNumber(intVectorWeekdays, maxWeekdays, currentWeekday, next);
         }
 
-        if (triggerType == 0) {
+        if (triggerType == sunrise) {
             if (currentTime >= sunriseTime + offset) {
 
                 if (next == currentWeekday) {
@@ -719,7 +733,7 @@ MyNode::NextTime MyNode::getNext() {
 
             }
         }
-        if (triggerType == 1) {
+        if (triggerType == sunset) {
 
             if (currentTime >= sunsetTime + offset) {
 
@@ -804,7 +818,7 @@ MyNode::NextTime MyNode::getNext() {
                 return structNextTime;
             }
         }
-        if (triggerType == 2) {
+        if (triggerType == timepoint) {
             if (currentTime >= dayStart + timepointMin) {
 
                 if (next == currentWeekday) {
@@ -912,7 +926,7 @@ MyNode::NextTime MyNode::getNext() {
             next = searchForSmallerNumber(intVectorWeekdays, daysMonthMax, currentMonthday, next);
         }
 
-        if (triggerType == 0) {
+        if (triggerType == sunrise) {
             if (currentTime >= sunriseTime + offset) {
 
                 if (next < currentMonthday) {
@@ -974,7 +988,7 @@ MyNode::NextTime MyNode::getNext() {
 
             }
         }
-        if (triggerType == 1) {
+        if (triggerType == sunset) {
 
             if (currentTime >= sunsetTime + offset) {
 
@@ -1037,7 +1051,7 @@ MyNode::NextTime MyNode::getNext() {
             }
 
         }
-        if (triggerType == 2) {
+        if (triggerType == timepoint) {
             if (currentTime >= dayStart + timepointMin) {
 
                 if (next < currentMonthday) {
@@ -1135,7 +1149,7 @@ MyNode::NextTime MyNode::getNext() {
             nextDayYearly = searchForSmallerNumber(intVectorMonthdays, daysMonthMax, currentMonthDay, nextDayYearly);
         }
 
-        if (triggerType == 0) {
+        if (triggerType == sunrise) {
             if (currentTime >= sunriseTime + offset) {
 
                 if (nextDayYearly == currentMonthDay) {
@@ -1219,7 +1233,7 @@ MyNode::NextTime MyNode::getNext() {
 
             }
         }
-        if (triggerType == 1) {
+        if (triggerType == sunset) {
 
             if (currentTime >= sunsetTime + offset) {
 
@@ -1299,7 +1313,7 @@ MyNode::NextTime MyNode::getNext() {
             }
 
         }
-        if (triggerType == 2) {
+        if (triggerType == timepoint) {
             if (currentTime >= dayStart + timepointMin) {
 
                 if (nextDayYearly == currentMonthDay) {
@@ -1383,10 +1397,10 @@ MyNode::NextTime MyNode::getNext() {
     }
 }
 
-std::vector<int32_t> MyNode::SplitStringToIntVector(std::string string_to_split) {
+std::vector<int32_t> MyNode::SplitStringToIntVector(std::string string_to_split, int size, char delim) {
     std::vector<int32_t> result;
-    result.resize(2);
-    auto parts = splitAll(string_to_split, ':');
+    result.resize(size);
+    auto parts = splitAll(string_to_split, delim);
     if (!string_to_split.empty()) {
         int i = 0;
         for (auto &part : parts) {
@@ -1606,7 +1620,7 @@ void MyNode::timer() {
             int currentMonth = _tm.tm_mon;
             int currentYear = _tm.tm_year;
 
-            _out->printError("timeNext " + std::to_string(timeNext));
+           /* _out->printError("timeNext " + std::to_string(timeNext));
             _out->printError("currentTime " + std::to_string(currentTime));
             _out->printError("dayNext " + std::to_string(dayNext));
             _out->printError("currentDay " + std::to_string(currentDay));
@@ -1617,7 +1631,7 @@ void MyNode::timer() {
             _out->printError("_lastTime " + std::to_string(_lastTime));
             _out->printError("---------------------------------------");
 
-            _out->printError("_current_time " + std::to_string(_currentTime));
+            _out->printError("_current_time " + std::to_string(_currentTime));*/
 
             if (currentTime == timeNext && currentDay == dayNext && currentMonth == monthNext && currentYear == yearNext && _lastTime / 1000 != currentTime / 1000) {
                 _lastTime = currentTime;

@@ -300,7 +300,12 @@ set(SOURCE_FILES
 		timers/timer2/TimerInterface.h
 		timers/timer2/TimerInterface.cpp
         timers/timer2/TimerInterfaceFactory.h
-		timers/timer2/TimerInterfaceFactory.cpp)
+		timers/timer2/TimerInterfaceFactory.cpp
+		timers/scale/MyNode.cpp
+		timers/scale/MyNode.h
+		timers/scale/Factory.cpp
+		timers/scale/Factory.h)
+
 
 add_custom_target(homegear COMMAND ../../devscripts/makeAll.sh SOURCES ${SOURCE_FILES})
 

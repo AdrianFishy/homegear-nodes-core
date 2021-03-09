@@ -21,7 +21,8 @@
       "sun-position": 1,
       "timer": 1,
       "weekly-program": 1,
-      "timer2": 1
+      "timer2": 1,
+      "scale": 1
     },
     "nodes": {
       "clock": "clock.so",
@@ -36,7 +37,8 @@
       "sun-position": "sun-position.so",
       "timer": "timer.so",
       "weekly-program": "weekly-program.so",
-      "timer2": "timer2.so"
+      "timer2": "timer2.so",
+      "scale": "scale.so"
     }
   },
   "version": "1.0.0"
