@@ -33,6 +33,8 @@
 #include <homegear-node/INode.h>
 #include <homegear-node/JsonDecoder.h>
 #include <homegear-base/BaseLib.h>
+#include <fstream>
+#include <string>
 
 #include <cstdio>
 
