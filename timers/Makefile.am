@@ -6,7 +6,7 @@ LIBS += -Wl,-Bdynamic -lhomegear-node
 
 libdir = $(localstatedir)/lib/homegear/node-blue/nodes/timers
 
-lib_LTLIBRARIES = clock.la delay.la impulse.la interval.la off-delay.la on-delay.la ramp-to.la rate-limiter.la timer.la timer2.la scale.la slow-pwm.la sun-position.la weekly-program.la
+lib_LTLIBRARIES = clock.la delay.la impulse.la interval.la off-delay.la on-delay.la ramp-to.la rate-limiter.la timer.la timer2.la slow-pwm.la sun-position.la weekly-program.la
 
 clock_la_SOURCES = clock/Factory.cpp clock/MyNode.cpp
 clock_la_LDFLAGS =-module -avoid-version -shared
@@ -37,9 +37,6 @@ timer_la_LDFLAGS =-module -avoid-version -shared
 
 timer2_la_SOURCES = timer2/Factory.cpp timer2/MyNode.cpp timer2/SunTime.cpp timer2/TimerInterface.cpp timer2/TimerInterfaceFactory.cpp
 timer2_la_LDFLAGS =-module -avoid-version -shared
-
-scale_la_SOURCES = scale/Factory.cpp scale/MyNode.cpp
-scale_la_LDFLAGS =-module -avoid-version -shared
 
 slow_pwm_la_SOURCES = slow-pwm/Factory.cpp slow-pwm/MyNode.cpp
 slow_pwm_la_LDFLAGS =-module -avoid-version -shared

@@ -1,0 +1,18 @@
+{
+  "scale": {
+    "label": {
+      "name": "Name",
+      "startup": "Output state on start up",
+      "value": "Value",
+      "valueMin": "Value min",
+      "valueMax": "Value max",
+      "scaleMin": "Scale min",
+      "scaleMax": "Scale max",
+      "intOrDouble": "Float Value",
+      "manualInput": "Manuall Input"
+    },
+    "input1Description": "Set to <code>false</code> to disable the node and to <code>true</code> to enable it again. By default the node is enabled.",
+    "paletteHelp": "<p>Generates events at specific time points.</p>",
+    "help": "<p>This node generates events at specific time points.</p>"
+  }
+}

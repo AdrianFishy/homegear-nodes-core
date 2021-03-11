@@ -1,21 +1,17 @@
 {
-  "name": "storage",
+  "name": "math",
   "keywords": [
     "node-blue",
     "homegear",
-    "storage",
-    "file",
-    "io"
+    "math"
   ],
   "node-blue": {
     "local": false,
     "maxThreadCounts": {
-      "file": 0,
-      "file-input": 1
+      "scale": 1
     },
     "nodes": {
-      "file": "file.so",
-      "file-input": "file-input.so"
+      "scale": "scale.so"
     }
   },
   "version": "1.0.0"
